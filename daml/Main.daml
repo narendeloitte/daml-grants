@@ -1,0 +1,53 @@
+-- Copyright (c) 2019 The DAML Authors. All rights reserved.
+-- SPDX-License-Identifier: Apache-2.0
+
+module Main where
+
+import Daml.Script
+import DA.Date
+
+type AssetId = ContractId Asset
+
+template Asset
+  with
+    issuer : Party
+    owner  : Party
+    name   : Text
+    dateOfAppraisal : Date
+    value : Decimal
+  where
+    ensure name /= ""
+    signatory issuer
+    observer owner
+
+    choice Give : AssetId
+      with
+        newOwner : Party
+      controller owner
+        do
+          create this with
+            owner = newOwner
+
+    choice Appraise : AssetId
+      with
+        newDateOfAppraisal : Date
+        newValue : Decimal
+      controller issuer
+        do
+          create this with
+            dateOfAppraisal = newDateOfAppraisal
+            value = newValue
+
+setup : Script [(Text, Party)]
+setup = do
+  alice <- allocatePartyWithHint "Alice" $ PartyIdHint with partyIdHint = "Alice"
+  bob <- allocatePartyWithHint "Bob" $ PartyIdHint with partyIdHint = "Bob"
+
+  let now = date 2020 Jan 1
+  submit alice do createCmd Asset with issuer = alice; owner = alice; name = "TV"; dateOfAppraisal = now; value = 1_000.0
+  submit alice do createCmd Asset with issuer = alice; owner = alice; name = "Car"; dateOfAppraisal = now; value = 30_000.0
+  submit alice do createCmd Asset with issuer = alice; owner = bob; name = "Boat"; dateOfAppraisal = now; value = 90_000.0
+  submit bob do createCmd Asset with issuer = bob; owner = alice; name = "Bike"; dateOfAppraisal = now; value = 200.0
+  submit bob do createCmd Asset with issuer = bob; owner = bob; name = "House"; dateOfAppraisal = now; value = 400_000.0
+
+  pure [("Alice", alice), ("Bob", bob)]
