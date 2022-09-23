@@ -2,57 +2,96 @@ module Grants where
 
 import Daml.Script
 import DA.Date
+
+
 type GrantOpportunityId = ContractId GrantOpportunity
 
 template GrantOpportunity
     with
 
+        opportunityNumber: Numeric 0
         title: Text        
         grantingAgency: Party
         typeOfGrant: Text
         description: Text
-        totalAmount: Decimal
-        dueDate: Date
-        submissionDate: Date
+        totalAmount: Numeric 2
+        closingDate: Date
+        postedDate: Date
         status: Text        
         contact: Text
         email: Text
         admin: Party  
+        funder: Party
+        technicalReviewDone: Text
+        financialReviewDone: Text        
         technicalReviewer: Party
         financialReviewer: Party
-        applicant: Party
-        
-              
+        regulator: Party
+          
     where
+        ensure totalAmount > 0.0                                       
         signatory grantingAgency
-        observer admin,technicalReviewer,financialReviewer,applicant
-                    
-                    
+        observer admin,technicalReviewer,financialReviewer,funder, regulator
+         
+        choice DoTechnicalReview: GrantOpportunityId
+            with
+                agreeOrNot: Text                
+            controller technicalReviewer 
+                do
+                    create this with
+                        technicalReviewDone = agreeOrNot
+            
+
+        -- choice DoFinancialReview: GrantOpportunityId
+        --     with
+        --         agreeOrNot: Text
+        --     controller financialReviewer 
+        --         do
+        --             create this with 
+        --                 financialReviewDone = agreeOrNot
+                
+
+test_restrictions : Script (ContractId GrantOpportunity)
 test_restrictions = do
 
-    alice <- allocateParty "Alice"
-    bob <- allocateParty "Bob"
-    dora <- allocateParty "Dora"
-    suchita <- allocateParty "Suchita"
-    tejesh <- allocateParty "Tejesh"
+    aliceAgency <- allocateParty "AliceAgency"
+    bob <- allocateParty "Bob"    
+    narendra <- allocateParty "Narendra"
+    john <- allocateParty "John"
+    alex <- allocateParty "Alex"
+    regulator <- allocateParty "Regulator"
 
-    let now = date 2020 Jan 1
-        duedate = date 2025 Jan 1
+    let now = date 2022 Sep 23
+        duedate = date 2025 Sep 22
         
-       
-    submit alice do 
+    submit aliceAgency do 
         createCmd GrantOpportunity with 
-            title = "Opportunity1"        
-            grantingAgency= alice
+            grantingAgency= aliceAgency
+            opportunityNumber = 1.0
+            title = "Opportunity1"                    
             typeOfGrant= "Typ1"
             description= "Test Opportunity1"
-            totalAmount= 100.0
-            dueDate= duedate
-            submissionDate= now
+            totalAmount= 100000.00
+            closingDate= duedate
+            postedDate= now
             status= "Active"        
             contact= "9876543298"
             email= "abc@gmail.com"
             admin = bob  
-            technicalReviewer= suchita
-            financialReviewer= tejesh
-            applicant= dora
+            technicalReviewer= narendra
+            financialReviewer= john            
+            funder= alex
+            regulator= regulator
+            technicalReviewDone=""
+            financialReviewDone=""
+
+            -- submit narendra do
+            --     createCmd opportunity1 DoTechnicalReview with
+            --         technicalReviewDone= "Yes"
+
+            
+            -- submit john do
+            --     exerciseCmd g DoFinancialReview with
+            --         financialReviewDone= "Yes"        
+
+                
