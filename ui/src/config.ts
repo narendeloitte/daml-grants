@@ -7,7 +7,7 @@ const names : any = {};
 partyList.forEach(p => names[p._2] = p._1);
 
 const applicationId = 'daml-grants'
-const ledgerId = "grants";
+const ledgerId = "sandbox";
 
 // Unfortunately, the development server of `create-react-app` does not proxy
 // websockets properly. Thus, we need to bypass it and talk to the JSON API

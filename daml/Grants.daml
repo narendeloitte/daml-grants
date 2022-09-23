@@ -1,0 +1,58 @@
+module Grants where    
+
+import Daml.Script
+import DA.Date
+type GrantOpportunityId = ContractId GrantOpportunity
+
+template GrantOpportunity
+    with
+
+        title: Text        
+        grantingAgency: Party
+        typeOfGrant: Text
+        description: Text
+        totalAmount: Decimal
+        dueDate: Date
+        submissionDate: Date
+        status: Text        
+        contact: Text
+        email: Text
+        admin: Party  
+        technicalReviewer: Party
+        financialReviewer: Party
+        applicant: Party
+        
+              
+    where
+        signatory grantingAgency
+        observer admin,technicalReviewer,financialReviewer,applicant
+                    
+                    
+test_restrictions = do
+
+    alice <- allocateParty "Alice"
+    bob <- allocateParty "Bob"
+    dora <- allocateParty "Dora"
+    suchita <- allocateParty "Suchita"
+    tejesh <- allocateParty "Tejesh"
+
+    let now = date 2020 Jan 1
+        duedate = date 2025 Jan 1
+        
+       
+    submit alice do 
+        createCmd GrantOpportunity with 
+            title = "Opportunity1"        
+            grantingAgency= alice
+            typeOfGrant= "Typ1"
+            description= "Test Opportunity1"
+            totalAmount= 100.0
+            dueDate= duedate
+            submissionDate= now
+            status= "Active"        
+            contact= "9876543298"
+            email= "abc@gmail.com"
+            admin = bob  
+            technicalReviewer= suchita
+            financialReviewer= tejesh
+            applicant= dora
