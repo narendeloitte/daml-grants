@@ -19,6 +19,7 @@ template GrantOpportunity
         contact: Text
         email: Text
         administrator: Party 
+        grantFunder: Party
           
     where
         ensure totalAmount > 0.0        
@@ -27,9 +28,17 @@ template GrantOpportunity
         maintainer key._1 
 
         signatory grantingAgency
-        observer administrator
-         
-                
+        observer administrator, grantFunder
+
+        nonconsuming choice FundGrant: GrantOpportunityId
+            with
+                fundAmount: Numeric 2                  
+            controller grantFunder, grantingAgency 
+                do
+                    create this with
+                      status = "Funded"
+                      totalAmount = fundAmount
+                      grantFunder = grantFunder 
 
         -- choice DoTechnicalReview: GrantOpportunityId
         --     with
@@ -54,6 +63,7 @@ test_restrictions = do
 
     aliceAgency1 <- allocateParty "AliceAgency1"
     bob <- allocateParty "Bob"    
+    charlie <- allocateParty "Charlie"    
     aliceAgency2 <- allocateParty "AliceAgency2"
     aliceAgency3 <- allocateParty "AliceAgency3"
     --ali <- allocateParty "Ali"
@@ -83,6 +93,7 @@ test_restrictions = do
             contact= "9876543298"
             email= "abc@gmail.com"
             administrator = bob
+            grantFunder = charlie
         --    applicant =["suchita","Tejesh"]
             -- granteeApplicantion = Application with
             --     applicant =ali
@@ -113,7 +124,7 @@ test_restrictions = do
             contact= "8176543987"
             email= "xyz@gmail.com"
             administrator = bob
-            
+            grantFunder = charlie
 
     submit aliceAgency3 do 
       
@@ -129,7 +140,7 @@ test_restrictions = do
             contact= "7776543298"
             email= "pqr@gmail.com"
             administrator = bob
-    
+            grantFunder = charlie
             -- submit narendra do
             --     createCmd opportunity1 DoTechnicalReview with
             --         technicalReviewDone= "Yes"

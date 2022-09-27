@@ -1,4 +1,4 @@
-sdk-version: 2.2.0
+sdk-version: 2.3.4
 name: daml-grants
 source: daml
 parties:

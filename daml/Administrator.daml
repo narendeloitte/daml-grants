@@ -34,6 +34,7 @@ template GrantingAgency
                     status = "New"
                     postedDate = toDateUTC nowTime 
                     closingDate = addDays (toDateUTC nowTime) 30
+                    grantFunder = grantingAgency
                     ..
 
     choice RevokeAccessGrantingAgency : () with
@@ -57,6 +58,46 @@ template GrantingAgencyAccessRequest
         create GrantingAgency with ..
 
     choice RejectGrantingAgencyAccess : () with
+     controller administrator
+        do return ()
+          
+
+
+template GrantFunder 
+  with 
+    administrator: Party 
+    grantFunder: Party 
+
+  where 
+    signatory administrator 
+    observer grantFunder
+    ensure administrator /= grantFunder 
+
+    key (administrator, grantFunder): (Party, Party)
+    maintainer key._1
+
+
+    choice RevokeAccessGrantFunder : () with
+     controller administrator
+        do return()
+          
+template GrantFunderAccessRequest 
+  with 
+    administrator: Party 
+    grantFunder: Party 
+    reason: Text
+  where 
+    signatory grantFunder 
+    key (administrator, grantFunder): (Party, Party)
+    maintainer key._2
+    ensure administrator /= grantFunder
+
+    choice GrantGrantFunderAccess : ContractId GrantFunder with
+     controller administrator
+        do
+        create GrantFunder with ..
+
+    choice RejectGrantFunderAccess : () with
      controller administrator
         do return ()
           

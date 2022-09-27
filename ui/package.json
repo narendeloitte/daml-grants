@@ -4,9 +4,9 @@
   "private": true,
   "dependencies": {
     "@daml.js/daml-grants-0.0.1": "file:./daml.js/daml-grants-0.0.1",
-    "@daml/ledger": "2.2.0",
-    "@daml/react": "2.2.0",
-    "@daml/types": "2.2.0",
+    "@daml/ledger": "2.3.4",
+    "@daml/react": "2.3.4",
+    "@daml/types": "2.3.4",
     "@material-ui/core": "^4.3.0",
     "@material-ui/icons": "^4.2.1",
     "@material-ui/styles": "^4.3.0",
