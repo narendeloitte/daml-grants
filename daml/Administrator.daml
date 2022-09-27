@@ -1,0 +1,90 @@
+module Administrator where 
+
+import Grants
+import DA.Date
+import Daml.Script
+
+
+template GrantingAgency 
+  with 
+    administrator: Party 
+    grantingAgency: Party 
+  where 
+    signatory administrator 
+    observer grantingAgency
+    ensure administrator /= grantingAgency
+
+    key (administrator, grantingAgency): (Party, Party)
+    maintainer key._1
+
+    nonconsuming choice CreateGrant : ContractId GrantOpportunity 
+        with
+            title: Text        
+            typeOfGrant: Text
+            description: Text
+            totalAmount: Numeric 2
+            contact: Text
+            email: Text
+                        
+        controller grantingAgency
+            do
+            nowTime <- getTime
+            create GrantOpportunity 
+                    with 
+                    status = "New"
+                    postedDate = toDateUTC nowTime 
+                    closingDate = addDays (toDateUTC nowTime) 30
+                    ..
+
+    choice RevokeAccessGrantingAgency : () with
+     controller administrator
+        do return()
+          
+template GrantingAgencyAccessRequest 
+  with 
+    administrator: Party 
+    grantingAgency: Party 
+    reason: Text
+  where 
+    signatory grantingAgency 
+    key (administrator, grantingAgency): (Party, Party)
+    maintainer key._2
+    ensure administrator /= grantingAgency
+
+    choice GrantGrantingAgencyAccess : ContractId GrantingAgency with
+     controller administrator
+        do
+        create GrantingAgency with ..
+
+    choice RejectGrantingAgencyAccess : () with
+     controller administrator
+        do return ()
+          
+
+
+setup : Script (ContractId GrantOpportunity)
+setup = do
+
+    alice <- allocateParty "Alice"
+    administrator <- allocateParty "Bob"   
+
+
+    aliceAgency <- submit administrator do 
+        createCmd GrantingAgency 
+          with 
+            administrator = administrator 
+            grantingAgency = alice 
+
+    submit alice do 
+      exerciseCmd aliceAgency CreateGrant 
+        with 
+            title = "Opportunity1"                    
+            typeOfGrant= "Typ1"
+            description= "Test Opportunity1"
+            totalAmount= 100000.00
+            contact= "9876543298"
+            email= "abc@gmail.com"
+
+
+
+ 

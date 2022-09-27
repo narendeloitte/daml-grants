@@ -9,7 +9,7 @@ type GrantOpportunityId = ContractId GrantOpportunity
 template GrantOpportunity
     with
 
-        opportunityNumber: Numeric 0
+       -- opportunityNumber: Numeric 0
         title: Text        
         grantingAgency: Party
         typeOfGrant: Text
@@ -20,26 +20,26 @@ template GrantOpportunity
         status: Text        
         contact: Text
         email: Text
-        admin: Party  
-        funder: Party
-        technicalReviewDone: Text
-        financialReviewDone: Text        
-        technicalReviewer: Party
-        financialReviewer: Party
-        regulator: Party
+        administrator: Party  
+        -- funder: Party
+        -- technicalReviewDone: Text
+        -- financialReviewDone: Text        
+        -- technicalReviewer: Party
+        -- financialReviewer: Party
+        -- regulator: Party
           
     where
         ensure totalAmount > 0.0                                       
         signatory grantingAgency
-        observer admin,technicalReviewer,financialReviewer,funder, regulator
+        observer administrator--,technicalReviewer,financialReviewer,funder, regulator
          
-        choice DoTechnicalReview: GrantOpportunityId
-            with
-                agreeOrNot: Text                
-            controller technicalReviewer 
-                do
-                    create this with
-                        technicalReviewDone = agreeOrNot
+        -- choice DoTechnicalReview: GrantOpportunityId
+        --     with
+        --         agreeOrNot: Text                
+        --     controller technicalReviewer 
+        --         do
+        --             create this with
+        --                 technicalReviewDone = agreeOrNot
             
 
         -- choice DoFinancialReview: GrantOpportunityId
@@ -67,7 +67,7 @@ test_restrictions = do
     submit aliceAgency do 
         createCmd GrantOpportunity with 
             grantingAgency= aliceAgency
-            opportunityNumber = 1.0
+            --opportunityNumber = 1.0
             title = "Opportunity1"                    
             typeOfGrant= "Typ1"
             description= "Test Opportunity1"
@@ -77,13 +77,13 @@ test_restrictions = do
             status= "Active"        
             contact= "9876543298"
             email= "abc@gmail.com"
-            admin = bob  
-            technicalReviewer= narendra
-            financialReviewer= john            
-            funder= alex
-            regulator= regulator
-            technicalReviewDone=""
-            financialReviewDone=""
+            administrator = bob  
+            -- technicalReviewer= narendra
+            -- financialReviewer= john            
+            -- funder= alex
+            -- regulator= regulator
+            -- technicalReviewDone=""
+            -- financialReviewDone=""
 
             -- submit narendra do
             --     createCmd opportunity1 DoTechnicalReview with
@@ -94,4 +94,4 @@ test_restrictions = do
             --     exerciseCmd g DoFinancialReview with
             --         financialReviewDone= "Yes"        
 
-                
+         
