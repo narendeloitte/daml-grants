@@ -2,14 +2,12 @@ module Grants where
 
 import Daml.Script
 import DA.Date
-
+--import GranteeApplication
 
 type GrantOpportunityId = ContractId GrantOpportunity
 
 template GrantOpportunity
-    with
-
-       -- opportunityNumber: Numeric 0
+    with       
         title: Text        
         grantingAgency: Party
         typeOfGrant: Text
@@ -20,19 +18,19 @@ template GrantOpportunity
         status: Text        
         contact: Text
         email: Text
-        administrator: Party  
-        -- funder: Party
-        -- technicalReviewDone: Text
-        -- financialReviewDone: Text        
-        -- technicalReviewer: Party
-        -- financialReviewer: Party
-        -- regulator: Party
+        administrator: Party 
           
     where
-        ensure totalAmount > 0.0                                       
+        ensure totalAmount > 0.0        
+        
+        key (grantingAgency, administrator,title): (Party, Party,Text)
+        maintainer key._1 
+
         signatory grantingAgency
-        observer administrator--,technicalReviewer,financialReviewer,funder, regulator
+        observer administrator
          
+                
+
         -- choice DoTechnicalReview: GrantOpportunityId
         --     with
         --         agreeOrNot: Text                
@@ -54,37 +52,84 @@ template GrantOpportunity
 test_restrictions : Script (ContractId GrantOpportunity)
 test_restrictions = do
 
-    aliceAgency <- allocateParty "AliceAgency"
+    aliceAgency1 <- allocateParty "AliceAgency1"
     bob <- allocateParty "Bob"    
-    narendra <- allocateParty "Narendra"
-    john <- allocateParty "John"
-    alex <- allocateParty "Alex"
-    regulator <- allocateParty "Regulator"
+    aliceAgency2 <- allocateParty "AliceAgency2"
+    aliceAgency3 <- allocateParty "AliceAgency3"
+    --ali <- allocateParty "Ali"
+    
+    now <- getTime    
+    
+    -- let 
+    --   bankDetails1 = BankDetails with
+    --     name = "ICICI bank"
+    --     address= "Pune Branch"
+    --     accountNo= "7834987654"
+    --     ifscCode= "ICICI0022"
 
-    let now = date 2022 Sep 23
-        duedate = date 2025 Sep 22
+    let duedate = addDays (toDateUTC now) 90
         
-    submit aliceAgency do 
+    submit aliceAgency1 do 
+      
         createCmd GrantOpportunity with 
-            grantingAgency= aliceAgency
-            --opportunityNumber = 1.0
+            grantingAgency= aliceAgency1      
             title = "Opportunity1"                    
-            typeOfGrant= "Typ1"
+            typeOfGrant= "Type1"
             description= "Test Opportunity1"
             totalAmount= 100000.00
-            closingDate= duedate
-            postedDate= now
+            postedDate= toDateUTC now
+            closingDate= duedate            
             status= "Active"        
             contact= "9876543298"
             email= "abc@gmail.com"
-            administrator = bob  
-            -- technicalReviewer= narendra
-            -- financialReviewer= john            
-            -- funder= alex
-            -- regulator= regulator
-            -- technicalReviewDone=""
-            -- financialReviewDone=""
+            administrator = bob
+        --    applicant =["suchita","Tejesh"]
+            -- granteeApplicantion = Application with
+            --     applicant =ali
+            --     administrator= bob
+            --     applicantOrgnization= "XYZ Org"
+            --     contact = "8765432567"
+            --     projectTitle = "test project2"
+            --     totalProjectBudget = 150000.00
+            --     amountRequested= 25000.00
+            --     projectBegindate= toDateUTC now
+            --     projectEnddate = addDays(toDateUTC now) 90
+            --     bankDetails= bankDetails1
+            --     status= "Active"
 
+
+       
+    submit aliceAgency2 do 
+      
+        createCmd GrantOpportunity with 
+            grantingAgency= aliceAgency2      
+            title = "Opportunity2"                    
+            typeOfGrant= "Type2"
+            description= "Test Opportunity2"
+            totalAmount= 150000.00
+            postedDate= toDateUTC now
+            closingDate= duedate            
+            status= "Active"        
+            contact= "8176543987"
+            email= "xyz@gmail.com"
+            administrator = bob
+            
+
+    submit aliceAgency3 do 
+      
+        createCmd GrantOpportunity with 
+            grantingAgency= aliceAgency3
+            title = "Opportunity3"                    
+            typeOfGrant= "Type1"
+            description= "Test Opportunity3"
+            totalAmount= 300000.00
+            postedDate= toDateUTC now
+            closingDate= duedate            
+            status= "Inactive"        
+            contact= "7776543298"
+            email= "pqr@gmail.com"
+            administrator = bob
+    
             -- submit narendra do
             --     createCmd opportunity1 DoTechnicalReview with
             --         technicalReviewDone= "Yes"
