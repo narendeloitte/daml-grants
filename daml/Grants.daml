@@ -2,7 +2,7 @@ module Grants where
 
 import Daml.Script
 import DA.Date
---import GranteeApplication
+
 
 type GrantOpportunityId = ContractId GrantOpportunity
 
@@ -28,7 +28,7 @@ template GrantOpportunity
         maintainer key._1 
 
         signatory grantingAgency
-        observer administrator, grantFunder
+        observer  administrator,grantFunder
 
         nonconsuming choice FundGrant: GrantOpportunityId
             with
@@ -40,6 +40,7 @@ template GrantOpportunity
                       totalAmount = fundAmount
                       grantFunder = grantFunder 
 
+        
         -- choice DoTechnicalReview: GrantOpportunityId
         --     with
         --         agreeOrNot: Text                
@@ -66,17 +67,8 @@ test_restrictions = do
     charlie <- allocateParty "Charlie"    
     aliceAgency2 <- allocateParty "AliceAgency2"
     aliceAgency3 <- allocateParty "AliceAgency3"
-    --ali <- allocateParty "Ali"
-    
-    now <- getTime    
-    
-    -- let 
-    --   bankDetails1 = BankDetails with
-    --     name = "ICICI bank"
-    --     address= "Pune Branch"
-    --     accountNo= "7834987654"
-    --     ifscCode= "ICICI0022"
-
+      
+    now <- getTime       
     let duedate = addDays (toDateUTC now) 90
         
     submit aliceAgency1 do 

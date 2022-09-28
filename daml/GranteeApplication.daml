@@ -10,7 +10,7 @@ data BankDetails = BankDetails with
     ifscCode: Text
      deriving (Eq, Show)
 
-template Application 
+template ApplicantInfo 
   with
     applicant: Party
     administrator: Party    
@@ -36,7 +36,7 @@ template Application
     observer administrator
 
 
-test_GranteeApplication : Script (ContractId Application)
+test_GranteeApplication : Script (ContractId ApplicantInfo)
 
 test_GranteeApplication = do
 
@@ -54,7 +54,7 @@ test_GranteeApplication = do
     
 
     submit alex do
-        createCmd Application with
+        createCmd ApplicantInfo with
           applicant =alex
           administrator= admin
           applicantOrgnization= "ABC Org"
@@ -78,7 +78,7 @@ test_GranteeApplication = do
     
 
     submit ali do
-      createCmd Application with
+      createCmd ApplicantInfo with
           applicant =ali
           administrator= admin
           applicantOrgnization= "XYZ Org"

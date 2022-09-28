@@ -1,6 +1,7 @@
 module Administrator where 
 
 import Grants
+import GranteeApplication
 import DA.Date
 import Daml.Script
 
@@ -144,12 +145,70 @@ template TechnicalReviewerAcccessRequest
         do return ()
 
 
+
+template Applicant 
+  with 
+    administrator: Party 
+    applicant: Party 
+  where 
+    signatory administrator 
+    observer applicant
+    ensure administrator /= applicant
+
+    key (administrator, applicant): (Party, Party)
+    maintainer key._1
+
+    nonconsuming choice CreateApplicantInfo : ContractId ApplicantInfo
+        with             
+            applicantOrgnization: Text    
+            contact : Text
+            projectTitle: Text
+            totalProjectBudget: Decimal 
+            amountRequested: Decimal 
+            projectBegindate: Date
+            projectEnddate: Date
+            bankDetails: BankDetails
+            --status: Text
+                        
+        controller applicant
+            do
+            --nowTime <- getTime
+            create ApplicantInfo 
+                    with 
+                    status = "New"
+                    ..
+
+    choice RevokeApplicantAccess : () with
+        controller administrator
+          do return()
+          
+template GrantingApplicantAccessRequest 
+  with 
+    administrator: Party 
+    applicant: Party 
+    reason: Text
+  where 
+    signatory applicant 
+    key (administrator, applicant): (Party, Party)
+    maintainer key._2
+    ensure administrator /= applicant
+
+    choice GrantingApplicantAccess : ContractId Applicant with
+     controller administrator
+        do
+        create Applicant with ..
+
+    choice RejectApplicantAccess : () with
+     controller administrator
+        do return ()
+          
+
 setup : Script (ContractId GrantOpportunity)
 setup = do
 
     alice <- allocateParty "Alice"
     administrator <- allocateParty "Bob"   
-
+    
 
     aliceAgency <- submit administrator do 
         createCmd GrantingAgency 
@@ -167,6 +226,40 @@ setup = do
             contact= "9876543298"
             email= "abc@gmail.com"
 
+
+applicantTest : Script (ContractId ApplicantInfo)
+applicantTest = do
+
+  jija <- allocateParty "Jija"
+  admin <- allocateParty "Admin"
+  nowTime <- getTime 
+
+  let 
+      bankDetails1 = BankDetails with
+        name = "ICICI bank"
+        address= "Pune Branch"
+        accountNo= "7834987654"
+        ifscCode= "ICICI0022"
+    
+  applicantData <- submit admin do
+    createCmd Applicant
+      with  
+        administrator = admin
+        applicant = jija  
+
+  submit jija do
+    exerciseCmd applicantData CreateApplicantInfo
+      with
+          applicantOrgnization= "XYZ Org"
+          contact = "8765432567"
+          projectTitle = "test project2"
+          totalProjectBudget = 150000.00
+          amountRequested= 25000.00
+          bankDetails= bankDetails1
+          projectBegindate= toDateUTC nowTime
+          projectEnddate = addDays(toDateUTC nowTime) 90
+          
+          
 
 technicalReviewerTest = do
     tr <- allocateParty "Sam"
