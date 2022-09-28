@@ -1,0 +1,116 @@
+digraph G {
+compound=true;
+rankdir=LR;
+subgraph cluster_GrantOpportunity{
+n0[label=Create][color=green]; 
+n1[label=Archive][color=red]; 
+n2[label=FundGrant][color=green]; 
+label=<<table align = "left" border="0" cellborder="0" cellspacing="1">
+<tr><td align="center"><b>GrantOpportunity</b></td></tr><tr><td align="left">title</td></tr> 
+<tr><td align="left">grantingAgency</td></tr> 
+<tr><td align="left">typeOfGrant</td></tr> 
+<tr><td align="left">description</td></tr> 
+<tr><td align="left">totalAmount</td></tr> 
+<tr><td align="left">closingDate</td></tr> 
+<tr><td align="left">postedDate</td></tr> 
+<tr><td align="left">status</td></tr> 
+<tr><td align="left">contact</td></tr> 
+<tr><td align="left">email</td></tr> 
+<tr><td align="left">administrator</td></tr> 
+<tr><td align="left">grantFunder</td></tr> 
+</table>>;color=blue
+}subgraph cluster_Application{
+n3[label=Create][color=green]; 
+n4[label=Archive][color=red]; 
+label=<<table align = "left" border="0" cellborder="0" cellspacing="1">
+<tr><td align="center"><b>Application</b></td></tr><tr><td align="left">applicant</td></tr> 
+<tr><td align="left">administrator</td></tr> 
+<tr><td align="left">applicantOrgnization</td></tr> 
+<tr><td align="left">contact</td></tr> 
+<tr><td align="left">projectTitle</td></tr> 
+<tr><td align="left">totalProjectBudget</td></tr> 
+<tr><td align="left">amountRequested</td></tr> 
+<tr><td align="left">projectBegindate</td></tr> 
+<tr><td align="left">projectEnddate</td></tr> 
+<tr><td align="left">bankDetails.name</td></tr> 
+<tr><td align="left">bankDetails.address</td></tr> 
+<tr><td align="left">bankDetails.accountNo</td></tr> 
+<tr><td align="left">bankDetails.ifscCode</td></tr> 
+<tr><td align="left">status</td></tr> 
+</table>>;color=blue
+}subgraph cluster_GrantFunder{
+n5[label=Create][color=green]; 
+n6[label=RevokeAccessGrantFunder][color=red]; 
+n7[label=Archive][color=red]; 
+label=<<table align = "left" border="0" cellborder="0" cellspacing="1">
+<tr><td align="center"><b>GrantFunder</b></td></tr><tr><td align="left">administrator</td></tr> 
+<tr><td align="left">grantFunder</td></tr> 
+</table>>;color=blue
+}subgraph cluster_GrantFunderAccessRequest{
+n8[label=Create][color=green]; 
+n9[label=GrantGrantFunderAccess][color=red]; 
+n10[label=RejectGrantFunderAccess][color=red]; 
+n11[label=Archive][color=red]; 
+label=<<table align = "left" border="0" cellborder="0" cellspacing="1">
+<tr><td align="center"><b>GrantFunderAccessRequest</b></td></tr><tr><td align="left">administrator</td></tr> 
+<tr><td align="left">grantFunder</td></tr> 
+<tr><td align="left">reason</td></tr> 
+</table>>;color=blue
+}subgraph cluster_GrantingAgency{
+n12[label=Create][color=green]; 
+n13[label=Archive][color=red]; 
+n14[label=CreateGrant][color=green]; 
+n15[label=RevokeAccessGrantingAgency][color=red]; 
+label=<<table align = "left" border="0" cellborder="0" cellspacing="1">
+<tr><td align="center"><b>GrantingAgency</b></td></tr><tr><td align="left">administrator</td></tr> 
+<tr><td align="left">grantingAgency</td></tr> 
+</table>>;color=blue
+}subgraph cluster_GrantingAgencyAccessRequest{
+n16[label=Create][color=green]; 
+n17[label=GrantGrantingAgencyAccess][color=red]; 
+n18[label=RejectGrantingAgencyAccess][color=red]; 
+n19[label=Archive][color=red]; 
+label=<<table align = "left" border="0" cellborder="0" cellspacing="1">
+<tr><td align="center"><b>GrantingAgencyAccessRequest</b></td></tr><tr><td align="left">administrator</td></tr> 
+<tr><td align="left">grantingAgency</td></tr> 
+<tr><td align="left">reason</td></tr> 
+</table>>;color=blue
+}subgraph cluster_TechnicalReviewer{
+n20[label=Create][color=green]; 
+n21[label=RevokeAccessTechnicalReviewer][color=red]; 
+n22[label=Archive][color=red]; 
+label=<<table align = "left" border="0" cellborder="0" cellspacing="1">
+<tr><td align="center"><b>TechnicalReviewer</b></td></tr><tr><td align="left">administrator</td></tr> 
+<tr><td align="left">technicalReviewer</td></tr> 
+</table>>;color=blue
+}subgraph cluster_TechnicalReviewerAcccessRequest{
+n23[label=Create][color=green]; 
+n24[label=GrantTechnicalReviewerAccess][color=red]; 
+n25[label=Archive][color=red]; 
+n26[label=RejectTechnicalReviewerAccess][color=red]; 
+label=<<table align = "left" border="0" cellborder="0" cellspacing="1">
+<tr><td align="center"><b>TechnicalReviewerAcccessRequest</b></td></tr><tr><td align="left">administrator</td></tr> 
+<tr><td align="left">technicalReviewer</td></tr> 
+<tr><td align="left">reason</td></tr> 
+</table>>;color=blue
+}subgraph cluster_Asset{
+n27[label=Create][color=green]; 
+n28[label=Archive][color=red]; 
+n29[label=Give][color=red]; 
+n30[label=Appraise][color=red]; 
+label=<<table align = "left" border="0" cellborder="0" cellspacing="1">
+<tr><td align="center"><b>Asset</b></td></tr><tr><td align="left">issuer</td></tr> 
+<tr><td align="left">owner</td></tr> 
+<tr><td align="left">name</td></tr> 
+<tr><td align="left">dateOfAppraisal</td></tr> 
+<tr><td align="left">value</td></tr> 
+</table>>;color=blue
+}n2->n0
+n9->n5
+n14->n0
+n17->n12
+n24->n20
+n29->n27
+n30->n27
+
+}

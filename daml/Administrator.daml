@@ -103,6 +103,47 @@ template GrantFunderAccessRequest
           
 
 
+template TechnicalReviewer
+  with
+    administrator: Party 
+    technicalReviewer: Party
+  where
+    signatory administrator
+    observer technicalReviewer
+    ensure administrator /= technicalReviewer 
+
+    key (administrator, technicalReviewer): (Party, Party)
+    maintainer key._1
+
+    choice RevokeAccessTechnicalReviewer : () 
+     controller administrator
+        do
+         return ()
+
+    
+template TechnicalReviewerAcccessRequest
+  with
+     administrator: Party 
+     technicalReviewer: Party
+     reason: Text
+  where
+    signatory technicalReviewer
+    observer administrator
+    
+    key (administrator, technicalReviewer): (Party, Party)
+    maintainer key._2
+    ensure administrator /= technicalReviewer
+
+    choice GrantTechnicalReviewerAccess : ContractId TechnicalReviewer with
+     controller administrator
+        do
+        create TechnicalReviewer with ..
+
+    choice RejectTechnicalReviewerAccess : () with
+     controller administrator
+        do return ()
+
+
 setup : Script (ContractId GrantOpportunity)
 setup = do
 
@@ -127,5 +168,22 @@ setup = do
             email= "abc@gmail.com"
 
 
+technicalReviewerTest = do
+    tr <- allocateParty "Sam"
+    administrator <- allocateParty "Bob"
 
+    trRequest <- submit tr do
+      createCmd TechnicalReviewerAcccessRequest with
+        administrator = administrator
+        technicalReviewer = tr
+        reason = "Technical Reviewing of Grants"
+
+    approvedTR <- submit administrator do
+      exerciseCmd trRequest GrantTechnicalReviewerAccess
+    
+    submitMustFail administrator do
+      exerciseCmd trRequest  RejectTechnicalReviewerAccess
+
+
+    pure () 
  
