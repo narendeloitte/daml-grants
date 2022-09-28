@@ -1,4 +1,4 @@
-module GranteeApplication where
+module ApplicantInfo where
 
 import Daml.Script
 import DA.Date

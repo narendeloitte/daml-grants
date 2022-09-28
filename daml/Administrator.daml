@@ -1,7 +1,7 @@
 module Administrator where 
 
 import Grants
-import GranteeApplication
+import ApplicantInfo
 import DA.Date
 import Daml.Script
 
