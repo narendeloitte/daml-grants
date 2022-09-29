@@ -2,6 +2,7 @@ module Grants where
 
 import Daml.Script
 import DA.Date
+import ApplicantInfo
 
 
 type GrantOpportunityId = ContractId GrantOpportunity

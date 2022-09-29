@@ -3,12 +3,12 @@ module ApplicantInfo where
 import Daml.Script
 import DA.Date
 
-data BankDetails = BankDetails with
-    name : Text
-    address : Text
-    accountNo: Text
-    ifscCode: Text
-     deriving (Eq, Show)
+-- data BankDetails = BankDetails with
+--     name : Text
+--     address : Text
+--     accountNo: Text
+--     ifscCode: Text
+--      deriving (Eq, Show)
 
 template ApplicantInfo 
   with
@@ -19,10 +19,10 @@ template ApplicantInfo
     projectTitle: Text
     totalProjectBudget: Decimal 
     amountRequested: Decimal 
-    projectBegindate: Date
-    projectEnddate: Date
-    bankDetails: BankDetails
-    status: Text
+    -- projectBegindate: Date
+    -- projectEnddate: Date
+   -- bankDetails: BankDetails
+    --status: Text
 
   where  
     ensure amountRequested > 0.0 && totalProjectBudget >0.00 
@@ -45,12 +45,12 @@ test_GranteeApplication = do
     ali <- allocateParty "Ali"
     nowTime <- getTime   
     
-    let 
-      bankDetails = BankDetails with
-        name = "SBI bank"
-        address= "Mumbai Branch"
-        accountNo= "00987654"
-        ifscCode= "SBI0022"
+    -- let 
+    --   bankDetails = BankDetails with
+    --     name = "SBI bank"
+    --     address= "Mumbai Branch"
+    --     accountNo= "00987654"
+    --     ifscCode= "SBI0022"
     
 
     submit alex do
@@ -62,19 +62,19 @@ test_GranteeApplication = do
           projectTitle = "test project"
           totalProjectBudget = 100000.00
           amountRequested= 20000.00
-          projectBegindate= toDateUTC nowTime
-          projectEnddate = addDays(toDateUTC nowTime) 90
-          bankDetails= bankDetails
-          status= "Active"
+        --   projectBegindate= toDateUTC nowTime
+        --   projectEnddate = addDays(toDateUTC nowTime) 90
+        --  -- bankDetails= bankDetails
+          --status= "Active"
       
     
     
-    let 
-      bankDetails1 = BankDetails with
-        name = "ICICI bank"
-        address= "Pune Branch"
-        accountNo= "7834987654"
-        ifscCode= "ICICI0022"
+    -- let 
+    --   bankDetails1 = BankDetails with
+    --     name = "ICICI bank"
+    --     address= "Pune Branch"
+    --     accountNo= "7834987654"
+    --     ifscCode= "ICICI0022"
     
 
     submit ali do
@@ -86,8 +86,8 @@ test_GranteeApplication = do
           projectTitle = "test project2"
           totalProjectBudget = 150000.00
           amountRequested= 25000.00
-          projectBegindate= toDateUTC nowTime
-          projectEnddate = addDays(toDateUTC nowTime) 90
-          bankDetails= bankDetails1
-          status= "Active"
+          -- projectBegindate= toDateUTC nowTime
+          -- projectEnddate = addDays(toDateUTC nowTime) 90
+        --  bankDetails= bankDetails1
+          --status= "Active"
     

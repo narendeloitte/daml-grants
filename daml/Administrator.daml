@@ -165,18 +165,14 @@ template Applicant
             projectTitle: Text
             totalProjectBudget: Decimal 
             amountRequested: Decimal 
-            projectBegindate: Date
-            projectEnddate: Date
-            bankDetails: BankDetails
+            
             --status: Text
                         
         controller applicant
             do
             --nowTime <- getTime
             create ApplicantInfo 
-                    with 
-                    status = "New"
-                    ..
+                    with ..
 
     choice RevokeApplicantAccess : () with
         controller administrator
@@ -228,19 +224,14 @@ setup = do
 
 
 applicantTest : Script (ContractId ApplicantInfo)
+
 applicantTest = do
 
   jija <- allocateParty "Jija"
   admin <- allocateParty "Admin"
-  nowTime <- getTime 
+  --nowTime <- getTime 
 
-  let 
-      bankDetails1 = BankDetails with
-        name = "ICICI bank"
-        address= "Pune Branch"
-        accountNo= "7834987654"
-        ifscCode= "ICICI0022"
-    
+  
   applicantData <- submit admin do
     createCmd Applicant
       with  
@@ -255,11 +246,7 @@ applicantTest = do
           projectTitle = "test project2"
           totalProjectBudget = 150000.00
           amountRequested= 25000.00
-          bankDetails= bankDetails1
-          projectBegindate= toDateUTC nowTime
-          projectEnddate = addDays(toDateUTC nowTime) 90
-          
-          
+       
 
 technicalReviewerTest = do
     tr <- allocateParty "Sam"
