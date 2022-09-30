@@ -25,17 +25,15 @@ template GrantingAgency
             description: Text
             totalAmount: Numeric 2
             contact: Text
-            email: Text
-                        
+            email: Text            
         controller grantingAgency
-            do
+            do  
             nowTime <- getTime
             create GrantOpportunity 
                     with 
                     status = "New"
-                    postedDate = toDateUTC nowTime 
-                    closingDate = addDays (toDateUTC nowTime) 30
-                    grantFunder = grantingAgency
+                    grantFunder = grantingAgency   
+
                     ..
 
     choice RevokeAccessGrantingAgency : () with
@@ -164,16 +162,17 @@ template Applicant
             contact : Text
             projectTitle: Text
             totalProjectBudget: Decimal 
-            amountRequested: Decimal 
+            amountGranted: Decimal 
             
             --status: Text
                         
         controller applicant
             do
             --nowTime <- getTime
-            create ApplicantInfo 
+            create GranteeApplication 
                     with ..
 
+    
     choice RevokeApplicantAccess : () with
         controller administrator
           do return()
@@ -223,7 +222,7 @@ setup = do
             email= "abc@gmail.com"
 
 
-applicantTest : Script (ContractId ApplicantInfo)
+applicantTest : Script (ContractId GranteeApplication)
 
 applicantTest = do
 
@@ -245,7 +244,7 @@ applicantTest = do
           contact = "8765432567"
           projectTitle = "test project2"
           totalProjectBudget = 150000.00
-          amountRequested= 25000.00
+          amountGranted= 25000.00
        
 
 technicalReviewerTest = do

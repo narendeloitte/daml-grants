@@ -13,14 +13,13 @@ template GrantOpportunity
         grantingAgency: Party
         typeOfGrant: Text
         description: Text
-        totalAmount: Numeric 2
-        closingDate: Date
-        postedDate: Date
+        totalAmount: Numeric 2        
         status: Text        
         contact: Text
         email: Text
         administrator: Party 
         grantFunder: Party
+        applicantList:[GranteeApplication]
           
     where
         ensure totalAmount > 0.0        
@@ -69,9 +68,38 @@ test_restrictions = do
     aliceAgency2 <- allocateParty "AliceAgency2"
     aliceAgency3 <- allocateParty "AliceAgency3"
       
+
+
     now <- getTime       
     let duedate = addDays (toDateUTC now) 90
-        
+
+
+    alex <- allocateParty "Alex"
+    admin <- allocateParty "Admin" 
+    
+  
+
+    let
+        applicant1= GranteeApplication with
+          applicant =alex
+          administrator= admin
+          applicantOrgnization= "ABC Org"
+          contact = "9876554329"
+          projectTitle = "test project"
+          totalProjectBudget = 100000.00
+          amountGranted= 20000.00
+    
+    ali <- allocateParty "Ali"
+    let
+        applicant2= GranteeApplication with
+          applicant =ali
+          administrator= admin
+          applicantOrgnization= "ABC Org"
+          contact = "9876554329"
+          projectTitle = "test project"
+          totalProjectBudget = 100000.00
+          amountGranted= 20000.00
+    
     submit aliceAgency1 do 
       
         createCmd GrantOpportunity with 
@@ -79,14 +107,14 @@ test_restrictions = do
             title = "Opportunity1"                    
             typeOfGrant= "Type1"
             description= "Test Opportunity1"
-            totalAmount= 100000.00
-            postedDate= toDateUTC now
-            closingDate= duedate            
+            totalAmount= 100000.00                     
             status= "Active"        
             contact= "9876543298"
             email= "abc@gmail.com"
             administrator = bob
             grantFunder = charlie
+            applicantList=[applicant1,applicant2]
+
         --    applicant =["suchita","Tejesh"]
             -- granteeApplicantion = Application with
             --     applicant =ali
@@ -103,37 +131,38 @@ test_restrictions = do
 
 
        
-    submit aliceAgency2 do 
+    -- submit aliceAgency2 do 
       
-        createCmd GrantOpportunity with 
-            grantingAgency= aliceAgency2      
-            title = "Opportunity2"                    
-            typeOfGrant= "Type2"
-            description= "Test Opportunity2"
-            totalAmount= 150000.00
-            postedDate= toDateUTC now
-            closingDate= duedate            
-            status= "Active"        
-            contact= "8176543987"
-            email= "xyz@gmail.com"
-            administrator = bob
-            grantFunder = charlie
+    --     createCmd GrantOpportunity with 
+    --         grantingAgency= aliceAgency2      
+    --         title = "Opportunity2"                    
+    --         typeOfGrant= "Type2"
+    --         description= "Test Opportunity2"
+    --         totalAmount= 150000.00
+    --         postedDate= toDateUTC now
+    --         closingDate= duedate            
+    --         status= "Active"        
+    --         contact= "8176543987"
+    --         email= "xyz@gmail.com"
+    --         administrator = bob
+    --         grantFunder = charlie
 
-    submit aliceAgency3 do 
+    -- submit aliceAgency3 do 
       
-        createCmd GrantOpportunity with 
-            grantingAgency= aliceAgency3
-            title = "Opportunity3"                    
-            typeOfGrant= "Type1"
-            description= "Test Opportunity3"
-            totalAmount= 300000.00
-            postedDate= toDateUTC now
-            closingDate= duedate            
-            status= "Inactive"        
-            contact= "7776543298"
-            email= "pqr@gmail.com"
-            administrator = bob
-            grantFunder = charlie
+    --     createCmd GrantOpportunity with 
+    --         grantingAgency= aliceAgency3
+    --         title = "Opportunity3"                    
+    --         typeOfGrant= "Type1"
+    --         description= "Test Opportunity3"
+    --         totalAmount= 300000.00
+    --         postedDate= toDateUTC now
+    --         closingDate= duedate            
+    --         status= "Inactive"        
+    --         contact= "7776543298"
+    --         email= "pqr@gmail.com"
+    --         administrator = bob
+    --         grantFunder = charlie
+            
             -- submit narendra do
             --     createCmd opportunity1 DoTechnicalReview with
             --         technicalReviewDone= "Yes"
