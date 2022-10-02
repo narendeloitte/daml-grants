@@ -155,6 +155,8 @@ template Applicant
     key (administrator, applicant): (Party, Party)
     maintainer key._1
 
+
+    -- changed "ApplicantInfo" to "GranteeApplication" to avoid compilation error
     nonconsuming choice CreateApplicantInfo : ContractId GranteeApplication
         with             
             applicantOrgnization: Text    

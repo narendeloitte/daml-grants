@@ -34,7 +34,8 @@ test_GranteeApplication = do
     nowTime <- getTime   
 
     submit alex do
-        createCmd ApplicantInfo with
+        -- changed "ApplicantInfo" to "GranteeApplication" to avoid compilation error
+        createCmd GranteeApplication with
           applicant =alex
           administrator= admin
           applicantOrgnization= "ABC Org"
@@ -45,7 +46,8 @@ test_GranteeApplication = do
    
 
     submit ali do
-      createCmd ApplicantInfo with
+      -- changed "ApplicantInfo" to "GranteeApplication" to avoid compilation error
+      createCmd GranteeApplication with
           applicant =ali
           administrator= admin
           applicantOrgnization= "XYZ Org"
