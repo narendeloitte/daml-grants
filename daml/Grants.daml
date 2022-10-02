@@ -98,6 +98,8 @@ test_restrictions = do
           projectTitle = "test project"
           totalProjectBudget = 100000.00
           amountGranted= 20000.00
+          -- Added by Amod: Added the field with value here
+          preScreeningResults = False
     
     ali <- allocateParty "Ali"
     let
@@ -109,6 +111,8 @@ test_restrictions = do
           projectTitle = "test project"
           totalProjectBudget = 100000.00
           amountGranted= 20000.00
+          -- Added by Amod: Added the field with value here
+          preScreeningResults = False
     
     submit aliceAgency1 do 
       

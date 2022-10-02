@@ -164,14 +164,19 @@ template Applicant
             projectTitle: Text
             totalProjectBudget: Decimal 
             amountGranted: Decimal 
-            
+            preScreeningResults: Bool
             --status: Text
                         
         controller applicant
             do
+            -- added by Amod 
+            -- User Story (6) Task (2)
+            -- if PreScreening is completed, then only proceed towards Grant Approvals/Rejections            
+            assertMsg "PreScreening completion is mandatory." (preScreeningResults)
             --nowTime <- getTime
             create GranteeApplication 
-                    with ..
+                    with 
+                    ..
 
     
     choice RevokeApplicantAccess : () with
@@ -246,6 +251,7 @@ applicantTest = do
           projectTitle = "test project2"
           totalProjectBudget = 150000.00
           amountGranted= 25000.00
+          preScreeningResults = True
        
 
 technicalReviewerTest = do
