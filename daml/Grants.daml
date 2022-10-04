@@ -41,6 +41,17 @@ template GrantOpportunity
                       grantFunder = grantFunder 
         --add choice to add applicant info to applicantList
         
+        choice AddapplicantInfoInList : ContractId GrantOpportunity
+            with
+                granteeApplicantion: [GranteeApplication]
+            controller  grantingAgency  
+                do
+                    
+                    --let granteeApplicantion = applicantList ++ granteeApplicantion
+                    create this with
+                        applicantList=granteeApplicantion
+
+
         -- choice DoTechnicalReview: GrantOpportunityId
         --     with
         --         agreeOrNot: Text                
@@ -110,9 +121,8 @@ test_restrictions = do
           totalProjectBudget = 100000.00
           amountGranted= 20000.00
     
-    submit aliceAgency1 do 
-      
-        createCmd GrantOpportunity with 
+    opportunity1 <- submit aliceAgency1 do 
+           createCmd GrantOpportunity with 
             grantingAgency= aliceAgency1      
             title = "Opportunity1"                    
             typeOfGrant= "Type1"
@@ -123,7 +133,18 @@ test_restrictions = do
             email= "abc@gmail.com"
             administrator = bob
             grantFunder = charlie
-            applicantList=[applicant1,applicant2]
+            applicantList=[]
+
+    submit aliceAgency1 do
+        exerciseCmd opportunity1 AddapplicantInfoInList
+            with
+                granteeApplicantion= [applicant1]
+
+    -- submit aliceAgency1 do
+    --     exerciseCmd opportunity1 AddapplicantInfoInList
+    --         with
+    --             granteeApplicantion= [applicant2]
+            
 
         --    applicant =["suchita","Tejesh"]
             -- granteeApplicantion = Application with
