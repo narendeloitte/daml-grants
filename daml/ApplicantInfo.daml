@@ -1,6 +1,38 @@
 module ApplicantInfo where
 
---import Daml.Script
+import Daml.Script
+
+template Applicant 
+  with 
+    administrator: Party 
+    applicant: Party 
+  where 
+    signatory administrator 
+    observer applicant
+    ensure administrator /= applicant
+
+    key (administrator, applicant): (Party, Party)
+    maintainer key._1
+
+    -- changed "ApplicantInfo" to "GranteeApplication" to avoid compilation error
+    nonconsuming choice CreateApplicantInfo : ContractId GranteeApplication
+        with             
+            applicantOrgnization: Text    
+            contact : Text
+            projectTitle: Text
+            totalProjectBudget: Decimal             
+            preScreeningResults: Bool
+      
+                        
+        controller applicant
+            do
+            -- added by Amod 
+            -- User Story (6) Task (2)
+            -- if PreScreening is completed, then only proceed towards Grant Approvals/Rejections            
+            assertMsg "PreScreening completion is mandatory." (preScreeningResults)            
+            create GranteeApplication 
+                    with 
+                    ..
 
 template GranteeApplication
   with
@@ -9,17 +41,15 @@ template GranteeApplication
     applicantOrgnization: Text    
     contact : Text
     projectTitle: Text
-    totalProjectBudget: Decimal 
-    amountGranted: Decimal 
+    totalProjectBudget: Decimal     
     -- added by Amod 
     -- User Story (6) Task (1)
     -- 'preScreeningResults' variable indicates if the Pre-Screening validation is success/failure
     preScreeningResults: Bool
     
   where  
-    ensure amountGranted > 0.0 
-           && totalProjectBudget >0.00 
-           && amountGranted <=   totalProjectBudget
+    ensure  totalProjectBudget >0.00 
+           
             
 
     key (applicant, administrator): (Party, Party)
@@ -28,39 +58,45 @@ template GranteeApplication
     signatory applicant
     observer administrator
 
-{-
+
 test_GranteeApplication : Script (ContractId GranteeApplication)
 
 test_GranteeApplication = do
 
-    alex <- allocateParty "Alex"
-    admin <- allocateParty "Admin" 
-    ali <- allocateParty "Ali"
-    nowTime <- getTime   
+  jija <- allocateParty "Jija"
+  administrator <- allocateParty "Admin"   
+    
+  applicantData <- submit administrator do
+    createCmd Applicant
+      with  
+        administrator = administrator
+        applicant = jija  
 
-    submit alex do
-        -- changed "ApplicantInfo" to "GranteeApplication" to avoid compilation error
-        createCmd GranteeApplication with
-          applicant =alex
-          administrator= admin
-          applicantOrgnization= "ABC Org"
-          contact = "9876554329"
-          projectTitle = "test project"
-          totalProjectBudget = 100000.00
-          amountGranted= 20000.00
-          -- Added by Amod: Added the field with value here
-          preScreeningResults = False
-   
-
-    submit ali do
-      -- changed "ApplicantInfo" to "GranteeApplication" to avoid compilation error
-      createCmd GranteeApplication with
-          applicant =ali
-          administrator= admin
+  submit jija do
+    exerciseCmd applicantData CreateApplicantInfo
+      with
           applicantOrgnization= "XYZ Org"
           contact = "8765432567"
+          projectTitle = "test project1"
+          totalProjectBudget = 150000.00          
+          preScreeningResults = True
+       
+
+  alex <- allocateParty "Alex"
+
+  alexData <- submit administrator do
+    createCmd Applicant
+      with  
+        administrator = administrator
+        applicant = alex  
+
+  submit alex do
+    exerciseCmd alexData CreateApplicantInfo
+      with
+          applicantOrgnization= "ABC Org"
+          contact = "7765432567"
           projectTitle = "test project2"
-          totalProjectBudget = 150000.00
-          amountGranted= 25000.00
- -}   
+          totalProjectBudget = 180000.00          
+          preScreeningResults = True
+       
 

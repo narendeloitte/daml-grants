@@ -1,42 +1,9 @@
 module Administrator where 
 
-import Grants
+--import Grants
 import ApplicantInfo
-import DA.Date
-import Daml.Script
-
-
--- template GrantingAgency 
---   with 
---     administrator: Party 
---     grantingAgency: Party 
---   where 
---     signatory administrator 
---     observer grantingAgency
---     ensure administrator /= grantingAgency
-
---     key (administrator, grantingAgency): (Party, Party)
---     maintainer key._1
-
---     nonconsuming choice CreateGrant : ContractId GrantOpportunity 
---       with
---         title: Text        
---         --grantingAgency: Party
---         typeOfGrant: Text
---         description: Text
---         totalAmount: Numeric 2        
---         status: Text        
---         contact: Text
---         email: Text
---         --administrator: Party 
---         grantFunder: Party
---         applicantList:[GranteeApplication]            
---       controller grantingAgency
---         do create GrantOpportunity with ..
-
---     choice RevokeAccessGrantingAgency : () with
---      controller administrator
---         do return()
+--import DA.Date
+--import Daml.Script
 
        
 -- template GrantingAgencyAccessRequest 
@@ -141,47 +108,6 @@ template TechnicalReviewerAcccessRequest
      controller administrator
         do return ()
 
-
-
-template Applicant 
-  with 
-    administrator: Party 
-    applicant: Party 
-  where 
-    signatory administrator 
-    observer applicant
-    ensure administrator /= applicant
-
-    key (administrator, applicant): (Party, Party)
-    maintainer key._1
-
-
-    -- changed "ApplicantInfo" to "GranteeApplication" to avoid compilation error
-    nonconsuming choice CreateApplicantInfo : ContractId GranteeApplication
-        with             
-            applicantOrgnization: Text    
-            contact : Text
-            projectTitle: Text
-            totalProjectBudget: Decimal 
-            amountGranted: Decimal 
-            preScreeningResults: Bool
-            --status: Text
-                        
-        controller applicant
-            do
-            -- added by Amod 
-            -- User Story (6) Task (2)
-            -- if PreScreening is completed, then only proceed towards Grant Approvals/Rejections            
-            assertMsg "PreScreening completion is mandatory." (preScreeningResults)
-            --nowTime <- getTime
-            create GranteeApplication 
-                    with 
-                    ..
-
-    
-    choice RevokeApplicantAccess : () with
-        controller administrator
-          do return()
           
 template GrantingApplicantAccessRequest 
   with 
