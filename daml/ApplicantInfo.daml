@@ -11,10 +11,15 @@ template GranteeApplication
     projectTitle: Text
     totalProjectBudget: Decimal 
     amountGranted: Decimal 
+    -- added by Amod 
+    -- User Story (6) Task (1)
+    -- 'preScreeningResults' variable indicates if the Pre-Screening validation is success/failure
+    preScreeningResults: Bool
     
   where  
-    ensure amountGranted > 0.0 && totalProjectBudget >0.00 
-            && amountGranted <=   totalProjectBudget   
+    ensure amountGranted > 0.0 
+           && totalProjectBudget >0.00 
+           && amountGranted <=   totalProjectBudget
             
 
     key (applicant, administrator): (Party, Party)
@@ -34,7 +39,8 @@ test_GranteeApplication = do
     nowTime <- getTime   
 
     submit alex do
-        createCmd ApplicantInfo with
+        -- changed "ApplicantInfo" to "GranteeApplication" to avoid compilation error
+        createCmd GranteeApplication with
           applicant =alex
           administrator= admin
           applicantOrgnization= "ABC Org"
@@ -42,10 +48,13 @@ test_GranteeApplication = do
           projectTitle = "test project"
           totalProjectBudget = 100000.00
           amountGranted= 20000.00
+          -- Added by Amod: Added the field with value here
+          preScreeningResults = False
    
 
     submit ali do
-      createCmd ApplicantInfo with
+      -- changed "ApplicantInfo" to "GranteeApplication" to avoid compilation error
+      createCmd GranteeApplication with
           applicant =ali
           administrator= admin
           applicantOrgnization= "XYZ Org"
@@ -54,3 +63,4 @@ test_GranteeApplication = do
           totalProjectBudget = 150000.00
           amountGranted= 25000.00
  -}   
+
