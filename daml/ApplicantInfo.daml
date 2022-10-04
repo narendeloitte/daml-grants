@@ -23,7 +23,7 @@ template GranteeApplication
     signatory applicant
     observer administrator
 
-
+{-
 test_GranteeApplication : Script (ContractId GranteeApplication)
 
 test_GranteeApplication = do
@@ -53,4 +53,4 @@ test_GranteeApplication = do
           projectTitle = "test project2"
           totalProjectBudget = 150000.00
           amountGranted= 25000.00
-    
+ -}   

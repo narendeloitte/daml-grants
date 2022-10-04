@@ -39,7 +39,7 @@ template GrantOpportunity
                       status = "Funded"
                       totalAmount = fundAmount
                       grantFunder = grantFunder 
-
+        --add choice to add applicant info to applicantList
         
         -- choice DoTechnicalReview: GrantOpportunityId
         --     with
@@ -57,7 +57,17 @@ template GrantOpportunity
         --         do
         --             create this with 
         --                 financialReviewDone = agreeOrNot
-                
+--create template to open apps for submission
+--will allow an applicant to submit then the choice w/in grantOpp will allow updating the contract               
+{-
+template AcceptApp
+    with
+        opportunity: GrantOpportunity
+        application: GranteeApplication
+    where
+        signatory application.applicant
+        observer opportunity.grantingAgency 
+-}
 
 test_restrictions : Script (ContractId GrantOpportunity)
 test_restrictions = do

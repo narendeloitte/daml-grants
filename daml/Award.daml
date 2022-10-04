@@ -1,0 +1,29 @@
+module Award where    
+
+import Daml.Script
+import DA.Date
+
+template Award
+    with
+        title: Text        
+        grantingAgency: Party
+        typeOfGrant: Text
+        description: Text
+        totalAmount: Numeric 2
+        closingDate: Date
+        postedDate: Date
+        status: Text        
+        contact: Text
+        email: Text
+        administrator: Party 
+        grantFunder: Party
+        grantRecipient: Party
+    
+    where
+        -- update the keys to use a grantID instead of a title string?
+        key (grantingAgency,grantRecipient,title): (Party,Party,Text)
+        maintainer key._1
+        signatory grantingAgency,grantFunder,grantRecipient
+        observer administrator
+
+        -- add should logic for funding/disburse be here instead of in grant template?

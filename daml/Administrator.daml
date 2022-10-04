@@ -19,27 +19,26 @@ template GrantingAgency
     maintainer key._1
 
     nonconsuming choice CreateGrant : ContractId GrantOpportunity 
-        with
-            title: Text        
-            typeOfGrant: Text
-            description: Text
-            totalAmount: Numeric 2
-            contact: Text
-            email: Text            
-        controller grantingAgency
-            do  
-            nowTime <- getTime
-            create GrantOpportunity 
-                    with 
-                    status = "New"
-                    grantFunder = grantingAgency   
-
-                    ..
+      with
+        title: Text        
+        --grantingAgency: Party
+        typeOfGrant: Text
+        description: Text
+        totalAmount: Numeric 2        
+        status: Text        
+        contact: Text
+        email: Text
+        --administrator: Party 
+        grantFunder: Party
+        applicantList:[GranteeApplication]            
+      controller grantingAgency
+        do create GrantOpportunity with ..
 
     choice RevokeAccessGrantingAgency : () with
      controller administrator
         do return()
-          
+
+       
 template GrantingAgencyAccessRequest 
   with 
     administrator: Party 
@@ -156,7 +155,7 @@ template Applicant
     key (administrator, applicant): (Party, Party)
     maintainer key._1
 
-    nonconsuming choice CreateApplicantInfo : ContractId ApplicantInfo
+    nonconsuming choice CreateApplicantInfo : ContractId GranteeApplication
         with             
             applicantOrgnization: Text    
             contact : Text
@@ -197,7 +196,7 @@ template GrantingApplicantAccessRequest
      controller administrator
         do return ()
           
-
+{-
 setup : Script (ContractId GrantOpportunity)
 setup = do
 
@@ -265,4 +264,4 @@ technicalReviewerTest = do
 
 
     pure () 
- 
+ -}
