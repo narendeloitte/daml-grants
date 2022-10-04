@@ -6,58 +6,58 @@ import DA.Date
 import Daml.Script
 
 
-template GrantingAgency 
-  with 
-    administrator: Party 
-    grantingAgency: Party 
-  where 
-    signatory administrator 
-    observer grantingAgency
-    ensure administrator /= grantingAgency
+-- template GrantingAgency 
+--   with 
+--     administrator: Party 
+--     grantingAgency: Party 
+--   where 
+--     signatory administrator 
+--     observer grantingAgency
+--     ensure administrator /= grantingAgency
 
-    key (administrator, grantingAgency): (Party, Party)
-    maintainer key._1
+--     key (administrator, grantingAgency): (Party, Party)
+--     maintainer key._1
 
-    nonconsuming choice CreateGrant : ContractId GrantOpportunity 
-      with
-        title: Text        
-        --grantingAgency: Party
-        typeOfGrant: Text
-        description: Text
-        totalAmount: Numeric 2        
-        status: Text        
-        contact: Text
-        email: Text
-        --administrator: Party 
-        grantFunder: Party
-        applicantList:[GranteeApplication]            
-      controller grantingAgency
-        do create GrantOpportunity with ..
+--     nonconsuming choice CreateGrant : ContractId GrantOpportunity 
+--       with
+--         title: Text        
+--         --grantingAgency: Party
+--         typeOfGrant: Text
+--         description: Text
+--         totalAmount: Numeric 2        
+--         status: Text        
+--         contact: Text
+--         email: Text
+--         --administrator: Party 
+--         grantFunder: Party
+--         applicantList:[GranteeApplication]            
+--       controller grantingAgency
+--         do create GrantOpportunity with ..
 
-    choice RevokeAccessGrantingAgency : () with
-     controller administrator
-        do return()
+--     choice RevokeAccessGrantingAgency : () with
+--      controller administrator
+--         do return()
 
        
-template GrantingAgencyAccessRequest 
-  with 
-    administrator: Party 
-    grantingAgency: Party 
-    reason: Text
-  where 
-    signatory grantingAgency 
-    key (administrator, grantingAgency): (Party, Party)
-    maintainer key._2
-    ensure administrator /= grantingAgency
+-- template GrantingAgencyAccessRequest 
+--   with 
+--     administrator: Party 
+--     grantingAgency: Party 
+--     reason: Text
+--   where 
+--     signatory grantingAgency 
+--     key (administrator, grantingAgency): (Party, Party)
+--     maintainer key._2
+--     ensure administrator /= grantingAgency
 
-    choice GrantGrantingAgencyAccess : ContractId GrantingAgency with
-     controller administrator
-        do
-        create GrantingAgency with ..
+--     choice GrantGrantingAgencyAccess : ContractId GrantingAgency with
+--      controller administrator
+--         do
+--         create GrantingAgency with ..
 
-    choice RejectGrantingAgencyAccess : () with
-     controller administrator
-        do return ()
+--     choice RejectGrantingAgencyAccess : () with
+--      controller administrator
+--         do return ()
           
 
 

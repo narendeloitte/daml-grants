@@ -1,6 +1,6 @@
 module ApplicantInfo where
 
-import Daml.Script
+--import Daml.Script
 
 template GranteeApplication
   with

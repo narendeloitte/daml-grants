@@ -1,11 +1,37 @@
 module Grants where    
 
 import Daml.Script
-import DA.Date
 import ApplicantInfo
 
 
 type GrantOpportunityId = ContractId GrantOpportunity
+
+template GrantingAgency 
+  with 
+    administrator: Party 
+    grantingAgency: Party 
+  where 
+    signatory administrator 
+    observer grantingAgency
+    ensure administrator /= grantingAgency
+
+    key (administrator, grantingAgency): (Party, Party)
+    maintainer key._1
+
+    nonconsuming choice CreateGrant : ContractId GrantOpportunity 
+      with
+        title: Text                
+        typeOfGrant: Text
+        description: Text
+        totalAmount: Numeric 2        
+        status: Text        
+        contact: Text
+        email: Text        
+        grantFunder: Party
+        applicantList:[GranteeApplication]            
+      controller grantingAgency
+        do create GrantOpportunity with ..
+
 
 template GrantOpportunity
     with       
@@ -81,68 +107,90 @@ template AcceptApp
 -}
 
 test_restrictions : Script (ContractId GrantOpportunity)
+
 test_restrictions = do
 
-    aliceAgency1 <- allocateParty "AliceAgency1"
+    aliceAgency <- allocateParty "AliceAgency1"
+    --admin <- allocateParty "Admin" 
     bob <- allocateParty "Bob"    
-    charlie <- allocateParty "Charlie"    
-    aliceAgency2 <- allocateParty "AliceAgency2"
-    aliceAgency3 <- allocateParty "AliceAgency3"
+    charlie <- allocateParty "Charlie"        
+    administrator <- allocateParty "Admin"   
+    
+    
+    -- aliceAgency2 <- allocateParty "AliceAgency2"
+    -- aliceAgency3 <- allocateParty "AliceAgency3"
       
+    agency <- submit administrator do 
+        createCmd GrantingAgency 
+          with 
+            administrator = administrator 
+            grantingAgency = aliceAgency
+
+    submit aliceAgency do 
+      exerciseCmd agency CreateGrant 
+        with 
+            title = "Opportunity1"                    
+            typeOfGrant= "Typ1"
+            description= "Test Opportunity1"
+            totalAmount= 100000.00
+            contact= "9876543298"
+            email= "abc@gmail.com"
+            status="New"
+            grantFunder=bob
+            applicantList=[]
+
+    -- now <- getTime       
+    -- let duedate = addDays (toDateUTC now) 90
 
 
-    now <- getTime       
-    let duedate = addDays (toDateUTC now) 90
-
-
-    alex <- allocateParty "Alex"
-    admin <- allocateParty "Admin" 
+  --  alex <- allocateParty "Alex"
+  --  admin <- allocateParty "Admin" 
     
   
 
-    let
-        applicant1= GranteeApplication with
-          applicant =alex
-          administrator= admin
-          applicantOrgnization= "ABC Org"
-          contact = "9876554329"
-          projectTitle = "test project"
-          totalProjectBudget = 100000.00
-          amountGranted= 20000.00
-          -- Added by Amod: Added the field with value here
-          preScreeningResults = False
+    -- let
+    --     applicant1= GranteeApplication with
+    --       applicant =alex
+    --       administrator= administrator
+    --       applicantOrgnization= "ABC Org"
+    --       contact = "9876554329"
+    --       projectTitle = "test project"
+    --       totalProjectBudget = 100000.00
+    --       amountGranted= 20000.00
+    --       -- Added by Amod: Added the field with value here
+    --       preScreeningResults = False
     
-    ali <- allocateParty "Ali"
-    let
-        applicant2= GranteeApplication with
-          applicant =ali
-          administrator= admin
-          applicantOrgnization= "ABC Org"
-          contact = "9876554329"
-          projectTitle = "test project"
-          totalProjectBudget = 100000.00
-          amountGranted= 20000.00
-          -- Added by Amod: Added the field with value here
-          preScreeningResults = False
+    -- ali <- allocateParty "Ali"
+    -- let
+    --     applicant2= GranteeApplication with
+    --       applicant =ali
+    --       administrator= admin
+    --       applicantOrgnization= "ABC Org"
+    --       contact = "9876554329"
+    --       projectTitle = "test project"
+    --       totalProjectBudget = 100000.00
+    --       amountGranted= 20000.00
+    --       -- Added by Amod: Added the field with value here
+    --       preScreeningResults = False
     
-    opportunity1 <- submit aliceAgency1 do 
-           createCmd GrantOpportunity with 
-            grantingAgency= aliceAgency1      
-            title = "Opportunity1"                    
-            typeOfGrant= "Type1"
-            description= "Test Opportunity1"
-            totalAmount= 100000.00                     
-            status= "Active"        
-            contact= "9876543298"
-            email= "abc@gmail.com"
-            administrator = bob
-            grantFunder = charlie
-            applicantList=[]
+    -- opportunity1 <- submit aliceAgency do 
+    --        createCmd GrantOpportunity with 
+    --         grantingAgency= aliceAgency
+    --         title = "Opportunity1"                    
+    --         typeOfGrant= "Type1"
+    --         description= "Test Opportunity1"
+    --         totalAmount= 100000.00                     
+    --         status= "Active"        
+    --         contact= "9876543298"
+    --         email= "abc@gmail.com"
+    --         administrator = bob
+    --         grantFunder = charlie
+    --         applicantList=[]
 
-    submit aliceAgency1 do
-        exerciseCmd opportunity1 AddapplicantInfoInList
-            with
-                granteeApplicantion= [applicant1]
+    -- submit aliceAgency1 do
+    --     exerciseCmd opportunity1 AddapplicantInfoInList
+    --         with
+    --             granteeApplicantion= [applicant1]
 
     -- submit aliceAgency1 do
     --     exerciseCmd opportunity1 AddapplicantInfoInList
