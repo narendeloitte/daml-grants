@@ -18,7 +18,7 @@ template GrantingAgency
     key (administrator, grantingAgency): (Party, Party)
     maintainer key._1
 
-    nonconsuming choice CreateGrant : ContractId GrantOpportunity 
+    nonconsuming choice CreateGrant : (ContractId GrantOpportunity )
       with
         title: Text                
         typeOfGrant: Text
@@ -68,7 +68,7 @@ template GrantOpportunity
                       grantFunder = grantFunder 
         --add choice to add applicant info to applicantList
         --submitApplication controller applicant
-        choice submitApplication : ContractId GrantOpportunity
+        choice SubmitApplication : ContractId GrantOpportunity
             with
                 granteeApplicantion: [GranteeApplication]
         --BPA - is the controller for here supposed to be grantingAgency? 
@@ -77,11 +77,14 @@ template GrantOpportunity
                 do
                     --BPA- need a branching code block here think the applicantList is empty by default and need to handle
                     if applicantList == [] 
-                      then create this with applicantList = [GranteeApplicantion]
-                      else create this with applicantList ++ [GranteeApplicantion]
+                      then create this with 
+                              applicantList = granteeApplicantion
+                      else create this with 
+                              -- TODO: Logic to add elements to the list
+                              applicantList =  granteeApplicantion
         
         -- pick the successful appliction and update the awarded to flag in the grant
-        choice awardApplication : ContractId GrantOpportunity
+        choice AwardApplication : ContractId GrantOpportunity
           with 
             successfulApplication: GranteeApplication
           controller  grantingAgency  
@@ -89,14 +92,14 @@ template GrantOpportunity
                 create this with awardedTo = successfulApplication
         
         -- remove application > 1.15 estimate
-        choice screenApplications : ContractId GrantOpportunity
-          with
+        -- choice ScreenApplications : ContractId GrantOpportunity
+        --   with
 
-          controller grantingAgency
-              do
-                --let appList = filter( where granteeApp.totalBudget > 1.15 * total ammount
-                --create this with applicantList = appList
-                ..
+        --   controller grantingAgency
+        --       do
+        --         --let appList = filter( where granteeApp.totalBudget > 1.15 * total ammount
+        --         --create this with applicantList = appList
+        --         ..
 
         -- choice DoTechnicalReview: GrantOpportunityId
         --     with
@@ -128,7 +131,10 @@ template AcceptApp
 
 test_restrictions : Script (ContractId GrantOpportunity)
 
+
 test_restrictions = do
+
+
 
     aliceAgency <- allocateParty "AliceAgency1"
     --admin <- allocateParty "Admin" 
@@ -144,6 +150,16 @@ test_restrictions = do
           with 
             administrator = administrator 
             grantingAgency = aliceAgency
+    let
+      applicant2= GranteeApplication with
+        applicant = bob
+        administrator= administrator
+        applicantOrgnization= "ABC Org"
+        contact = "9876554329"
+        projectTitle = "test project"
+        totalProjectBudget = 100000.00
+        -- Added by Amod: Added the field with value here
+        preScreeningResults = False
 
     submit aliceAgency do 
       exerciseCmd agency CreateGrant 
@@ -157,6 +173,7 @@ test_restrictions = do
             status="New"
             grantFunder=bob
             applicantList=[]
+            awardedTo=applicant2
 
    
     agency2 <- submit administrator do 
@@ -177,7 +194,8 @@ test_restrictions = do
             status="New"
             grantFunder=charlie
             applicantList=[]
-    
+            awardedTo = applicant2
+
     -- now <- getTime       
     -- let duedate = addDays (toDateUTC now) 90
 
