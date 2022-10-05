@@ -5,6 +5,11 @@ module Main where
 
 import Daml.Script
 import DA.Date
+import ApplicantInfo
+import Grants
+import Administrator
+import PreScreening
+import Award
 
 type AssetId = ContractId Asset
 
@@ -38,16 +43,107 @@ template Asset
             dateOfAppraisal = newDateOfAppraisal
             value = newValue
 
-setup : Script [(Text, Party)]
-setup = do
-  alice <- allocatePartyWithHint "Alice" $ PartyIdHint with partyIdHint = "Alice"
-  bob <- allocatePartyWithHint "Bob" $ PartyIdHint with partyIdHint = "Bob"
+applicantSetup : Script ()
 
-  let now = date 2020 Jan 1
-  submit alice do createCmd Asset with issuer = alice; owner = alice; name = "TV"; dateOfAppraisal = now; value = 1_000.0
-  submit alice do createCmd Asset with issuer = alice; owner = alice; name = "Car"; dateOfAppraisal = now; value = 30_000.0
-  submit alice do createCmd Asset with issuer = alice; owner = bob; name = "Boat"; dateOfAppraisal = now; value = 90_000.0
-  submit bob do createCmd Asset with issuer = bob; owner = alice; name = "Bike"; dateOfAppraisal = now; value = 200.0
-  submit bob do createCmd Asset with issuer = bob; owner = bob; name = "House"; dateOfAppraisal = now; value = 400_000.0
+applicantSetup = do
+  -- let Alice and Bob be the Applicants
+  -- let admin be the Administrator
+  alice <- allocateParty "Alice"
+  bob <- allocateParty "Bob"
+  admin <- allocateParty "Administrator" 
+  -- define grant Agency
+  gAgency <- allocateParty "GrantAgency"  
+  
+  -- create Grantee Application for Alice and Bob
+  aliceData <- submit admin do
+    createCmd Applicant
+      with  
+        administrator = admin
+        applicant = alice  
 
-  pure [("Alice", alice), ("Bob", bob)]
+  bobData <- submit admin do
+    createCmd Applicant
+      with  
+        administrator = admin
+        applicant = bob
+
+  agency <- submit admin do 
+    createCmd GrantingAgency 
+      with 
+        administrator = admin 
+        grantingAgency = gAgency
+
+  submit alice do
+    exerciseCmd aliceData CreateApplicantInfo
+      with
+          applicantOrgnization= "Org1"
+          contact = "9998887777"
+          projectTitle = "Proj1"
+          totalProjectBudget = 100.00          
+          preScreeningResults = True
+
+  submit bob do
+    exerciseCmd bobData CreateApplicantInfo
+      with
+          applicantOrgnization= "Org2"
+          contact = "8889997777"
+          projectTitle = "Proj2"
+          totalProjectBudget = 1000.00          
+          preScreeningResults = True
+  pure()
+
+  let
+    applicantAlice = GranteeApplication with
+      applicant = alice
+      administrator= admin
+      applicantOrgnization= "Org1"
+      contact = "9998887777"
+      projectTitle = "Project1"
+      totalProjectBudget = 1000.00
+      preScreeningResults = True  
+
+  let
+    applicantBob = GranteeApplication with
+      applicant = bob
+      administrator= admin
+      applicantOrgnization= "Org2"
+      contact = "8889997777"
+      projectTitle = "Project2"
+      totalProjectBudget = 1000.00
+      preScreeningResults = True  
+
+  submit gAgency do 
+    exerciseCmd agency CreateGrant 
+      with 
+          title = "Grant Application to Alice"                    
+          typeOfGrant= "GrantType1"
+          description= "aliceData"
+          totalAmount= 150.00
+          contact= "9998887777"
+          email= "alice@gmail.com"
+          status="New"
+          grantFunder=bob
+          applicantList=[applicantAlice]
+          awardedTo=applicantAlice
+
+  submit gAgency do 
+    exerciseCmd agency CreateGrant 
+      with 
+          title = "Grant Application to Bob"                    
+          typeOfGrant= "GrantType1"
+          description= "bobData"
+          totalAmount= 150.00
+          contact= "8889997777"
+          email= "bob@gmail.com"
+          status="New"
+          grantFunder=bob
+          applicantList=[applicantAlice, applicantBob]
+          awardedTo=applicantBob
+  pure()
+
+
+
+  
+
+
+
