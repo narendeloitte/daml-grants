@@ -159,9 +159,9 @@ template Application
   with
     grantOpportunity: GrantOpportunity
     applicantInfo: GranteeApplication
-    applicant: Party
+
   where
-    signatory applicant
+    signatory applicantInfo.applicant
     observer grantOpportunity.grantingAgency
 
 test_Grants : Script (ContractId GrantOpportunity)
@@ -223,7 +223,7 @@ accept <- submit bob do
       with
         grantOpportunity=  var_opportunity1
         applicantInfo= applicant1
-        applicant=bob
+        --applicant=bob
 
 submit aliceAgency do 
       exerciseCmd opportunity1 AcceptApplication 
