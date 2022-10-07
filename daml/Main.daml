@@ -123,7 +123,7 @@ applicantSetup = do
           email= "alice@gmail.com"
           status="New"
           grantFunder=bob
-          applicantList=[applicantAlice]
+         -- applicantList=[applicantAlice]
           --awardedTo=applicantAlice
 
   submit gAgency do 
@@ -137,7 +137,7 @@ applicantSetup = do
           email= "bob@gmail.com"
           status="New"
           grantFunder=bob
-          applicantList=[applicantAlice, applicantBob]
+         -- applicantList=[applicantAlice, applicantBob]
           --awardedTo=applicantBob
   pure()
 

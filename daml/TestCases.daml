@@ -1,0 +1,156 @@
+ module TestCases where
+
+import Grants
+import Daml.Script
+import ApplicantInfo
+
+test_GrantingProcess : Script (ContractId GrantOpportunityApplications)
+
+test_GrantingProcess = do
+
+aliceAgency <- allocateParty "AliceAgency"
+bob <- allocateParty "Bob"    
+administrator <- allocateParty "Admin"   
+
+jija <- allocateParty "Jija"
+  
+applicantData1 <- submit administrator do
+    createCmd Applicant
+      with  
+        administrator = administrator
+        applicant = jija  
+
+submit jija do
+    exerciseCmd applicantData1 CreateApplicantInfo
+      with
+          applicantOrgnization= "Jija Org"
+          contact = "8765432567"
+          projectTitle = "test project1"
+          totalProjectBudget = 150000.00          
+          preScreeningResults = True
+       
+sophee <- allocateParty "Sophee"
+  
+applicantData2 <- submit administrator do
+    createCmd Applicant
+      with  
+        administrator = administrator
+        applicant = sophee  
+
+submit sophee do
+    exerciseCmd applicantData2 CreateApplicantInfo
+      with
+          applicantOrgnization= "Sophee Org"
+          contact = "9876567654"
+          projectTitle = "test project2"
+          totalProjectBudget = 200000.00          
+          preScreeningResults = True
+
+
+narendra <- allocateParty "Narendra"
+  
+applicantData3 <- submit administrator do
+    createCmd Applicant
+      with  
+        administrator = administrator
+        applicant = narendra  
+
+submit narendra do
+    exerciseCmd applicantData3 CreateApplicantInfo
+      with
+          applicantOrgnization= "Narendra Org"
+          contact = "7787654344"
+          projectTitle = "test project3"
+          totalProjectBudget = 120000.00          
+          preScreeningResults = True
+       
+
+agency1 <- submit administrator do 
+  createCmd GrantingAgency 
+    with 
+      administrator = administrator 
+      grantingAgency = aliceAgency
+
+submit aliceAgency do 
+  exerciseCmd agency1 CreateGrant 
+    with 
+      title = "Opportunity1"                    
+      typeOfGrant= "Type1"
+      description= "Test Opportunity1"
+      totalAmount= 500000.00
+      contact= "9876543298"
+      email= "abc@gmail.com"
+      status="New"
+      grantFunder=bob
+
+
+technicalReviewer <- allocateParty"TechnicalReviewer"
+let 
+  var_opportunity1 = GrantOpportunity with
+      title = "Opportunity1"                    
+      typeOfGrant= "Type1"
+      description= "Test Opportunity1"
+      totalAmount= 100000.00
+      contact= "9876543298"
+      email= "abc@gmail.com"
+      status="New"
+      grantFunder=bob
+      grantingAgency=aliceAgency
+      administrator=administrator
+let
+    applicantJija = GranteeApplication with
+          applicantOrgnization= "Jija Org"
+          contact = "8765432567"
+          projectTitle = "test project1"
+          totalProjectBudget = 150000.00          
+          preScreeningResults = True
+          applicant=jija
+          administrator=administrator
+       
+
+technicalReviewer <- allocateParty"TechnicalReviewer"
+
+grantOppApplication <- submit aliceAgency do
+  createCmd GrantOpportunityApplications
+    with
+      grantOpportunity =var_opportunity1
+      granteeApplicationList =[applicantJija]
+      technicalReviewer=technicalReviewer
+
+let
+    applicantSophee = GranteeApplication with
+      applicant = sophee
+      applicantOrgnization= "Sophee Org"
+      contact = "9876567654"
+      projectTitle = "test project2"
+      totalProjectBudget = 200000.00          
+      preScreeningResults = True
+      administrator=administrator
+
+submit aliceAgency do
+  exerciseCmd grantOppApplication AppendApplications
+    with
+      granteeApplication=[applicantSophee] 
+
+
+-- alexAgency <- allocateParty "AlexAgency"
+
+-- agency2 <- submit administrator do 
+--   createCmd GrantingAgency 
+--     with 
+--       administrator = administrator 
+--       grantingAgency = alexAgency
+
+-- submit alexAgency do 
+--   exerciseCmd agency2 CreateGrant 
+--     with 
+--       title = "Opportunity2"                    
+--       typeOfGrant= "Type2"
+--       description= "Test Opportunity3"
+--       totalAmount= 150000.00
+--       contact= "8765456765"
+--       email= "xyz@gmail.com"
+--       status="New"
+--       grantFunder=bob
+
+

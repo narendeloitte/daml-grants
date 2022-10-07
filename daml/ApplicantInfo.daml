@@ -49,9 +49,7 @@ template GranteeApplication
     
   where  
     ensure  totalProjectBudget >0.00 
-           
-            
-
+    
     key (applicant, administrator): (Party, Party)
     maintainer key._1
 
