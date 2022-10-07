@@ -1,0 +1,248 @@
+module Exp where
+
+import Daml.Script
+
+type GrantOpportunityId = ContractId GrantOpportunity
+
+
+template Applicant 
+  with 
+    administrator: Party 
+    applicant: Party 
+  where 
+    signatory administrator 
+    observer applicant
+    ensure administrator /= applicant
+
+    key (administrator, applicant): (Party, Party)
+    maintainer key._1
+
+    -- changed "ApplicantInfo" to "GranteeApplication" to avoid compilation error
+    nonconsuming choice CreateApplicantInfo : ContractId GranteeApplication
+        with             
+            applicantOrgnization: Text    
+            contact : Text
+            projectTitle: Text
+            totalProjectBudget: Decimal             
+            preScreeningResults: Bool
+      
+                        
+        controller applicant
+            do
+            -- added by Amod 
+            -- User Story (6) Task (2)
+            -- if PreScreening is completed, then only proceed towards Grant Approvals/Rejections            
+            assertMsg "PreScreening completion is mandatory." (preScreeningResults)            
+            create GranteeApplication 
+                    with
+                    .. 
+                    
+-- somehow needs to be associated with a GrantOpportunity
+template GranteeApplication
+  with
+    applicant: Party
+    administrator: Party    
+    applicantOrgnization: Text    
+    contact : Text
+    projectTitle: Text
+    totalProjectBudget: Decimal     
+    -- added by Amod 
+    -- User Story (6) Task (1)
+    -- 'preScreeningResults' variable indicates if the Pre-Screening validation is success/failure
+    preScreeningResults: Bool
+    
+  where  
+    ensure  totalProjectBudget >0.00     
+
+    key (applicant, administrator): (Party, Party)
+    maintainer key._1
+
+    signatory applicant
+    observer administrator
+
+    -- this choice needs to have the create type match on AcceptApp. Ideally want a grant object wrapping the info to pass around and to be able to go grant.grantingAgency
+    nonconsuming choice Apply : ContractId SubmitApp
+        with 
+            grant: GrantOpportunity
+            grantingAgency: Party
+        controller applicant
+        do create SubmitApp
+                with pendingApp = AcceptApp with grant; applicant; grantingAgency --applicant; title; grantingAgency; typeOfGrant; description; totalAmount; status; contact; email; administrator; grantFunder; applicantList; awardedTo
+        
+
+--proposal is the initiate contract (SubmitApp)
+--can be created from any role contract (granting agency)
+template SubmitApp
+  with
+    pendingApp: AcceptApp
+  where
+    signatory pendingApp.applicant
+    observer pendingApp.grantingAgency
+
+    choice AcceptApplication: ContractId AcceptApp
+      controller pendingApp.grantingAgency
+      do create pendingApp
+
+--result contract (AcceptApp)
+--returns a contract representing the aggreement between the two parties (newGrantOpp)
+--both need to consent to this 
+--line 98 has a compile error since we are not passing all the fields from GrantOpportunity into the choice (if we do line 67-with pendingApp = AcceptApp with grant; applicant; grantingAgency breaks)
+--need to figure out how to pass the GrantOpp through starting above at GranteeApplication for this to make sense
+template AcceptApp
+  with
+   grant: GrantOpportunity
+   applicant: Party 
+   grantingAgency: Party
+  where
+    signatory applicant, grantingAgency
+
+    nonconsuming choice UpdateGrant : ContractId GrantOpportunity
+      with amount: Decimal
+      controller grantingAgency
+      do create GrantOpportunity with .. --needs to type match GrantOppurtunity
+
+
+
+template GrantingAgency 
+  with 
+    administrator: Party 
+    grantingAgency: Party 
+  where 
+    signatory administrator 
+    observer grantingAgency
+    ensure administrator /= grantingAgency
+
+    key (administrator, grantingAgency): (Party, Party)
+    maintainer key._1
+
+    nonconsuming choice CreateGrant : (ContractId GrantOpportunity )
+      with
+        title: Text                
+        typeOfGrant: Text
+        description: Text
+        totalAmount: Numeric 2        
+        status: Text        
+        contact: Text
+        email: Text        
+        grantFunder: Party
+        applicantList:[GranteeApplication]  
+        awardedTo: GranteeApplication          
+      controller grantingAgency
+        do create GrantOpportunity with ..
+
+
+template GrantOpportunity
+    with       
+        title: Text        
+        grantingAgency: Party
+        typeOfGrant: Text
+        description: Text
+        totalAmount: Numeric 2        
+        status: Text        
+        contact: Text
+        email: Text
+        administrator: Party 
+        grantFunder: Party
+        applicantList:[GranteeApplication]
+        awardedTo: GranteeApplication 
+    where
+        ensure totalAmount > 0.0        
+        
+        key (grantingAgency, administrator,title): (Party, Party,Text)
+        maintainer key._1 
+
+        signatory grantingAgency
+        observer  administrator,grantFunder
+
+        nonconsuming choice FundGrant: GrantOpportunityId
+            with
+                fundAmount: Numeric 2                  
+            controller grantFunder, grantingAgency 
+                do
+                    create this with
+                      status = "Funded"
+                      totalAmount = fundAmount
+                      grantFunder = grantFunder 
+        --add choice to add applicant info to applicantList
+        --submitApplication controller applicant
+       {- choice SubmitApplication : ContractId GrantOpportunity
+            with
+                granteeApplication: [GranteeApplication]
+        --BPA - is the controller for here supposed to be grantingAgency? 
+        --How does the applicant initate an application submission?
+            controller  grantingAgency  
+                do
+                    let appList = applicantList ++ granteeApplication
+                    --BPA- need a branching code block here think the applicantList is empty by default and need to handle
+                    if applicantList == [] 
+                      then create this with 
+                              applicantList = granteeApplication
+                      else create this with 
+                              applicantList = appList
+                              -- TODO: Logic to add elements to the list
+                              
+        -}
+        -- pick the successful appliction and update the awarded to flag in the grant
+        choice AwardApplication : ContractId GrantOpportunity
+          with 
+            successfulApplication: GranteeApplication
+          controller  grantingAgency  
+              do
+                create this with awardedTo = successfulApplication
+
+
+
+
+
+
+
+
+
+
+{-
+--master contract
+--should this be the grantApplicant/granteeapplication?
+--issuer == applicant?
+template CoinMaster
+  with
+    issuer: Party
+  where
+    signatory issuer
+
+    nonconsuming choice Invite : ContractId CoinIssueProposal
+      with owner: Party
+      controller issuer
+      do create CoinIssueProposal
+            with coinAgreement = CoinIssueAgreement with issuer; owner
+
+
+--proposal is the initiate contract (submitApp)
+-- can be created from any role contract (granting agency)
+template CoinIssueProposal
+  with
+    coinAgreement: CoinIssueAgreement
+  where
+    signatory coinAgreement.issuer
+    observer coinAgreement.owner
+
+    choice AcceptCoinProposal
+      : ContractId CoinIssueAgreement
+      controller coinAgreement.owner
+      do create coinAgreement
+
+--result contract (acceptSubmission)
+--returns a contract representing the aggreement between the two parties (newGrantOpp)
+--both need to consent to this 
+template CoinIssueAgreement
+  with
+    issuer: Party
+    owner: Party
+  where
+    signatory issuer, owner
+
+    nonconsuming choice Issue : ContractId Coin
+      with amount: Decimal
+      controller issuer
+      do create Coin with issuer; owner; amount; delegates = []
+-}
+
