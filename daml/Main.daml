@@ -124,7 +124,7 @@ applicantSetup = do
           status="New"
           grantFunder=bob
           applicantList=[applicantAlice]
-          awardedTo=applicantAlice
+          --awardedTo=applicantAlice
 
   submit gAgency do 
     exerciseCmd agency CreateGrant 
@@ -138,7 +138,7 @@ applicantSetup = do
           status="New"
           grantFunder=bob
           applicantList=[applicantAlice, applicantBob]
-          awardedTo=applicantBob
+          --awardedTo=applicantBob
   pure()
 
 

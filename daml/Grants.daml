@@ -29,32 +29,32 @@ template GrantingAgency
         email: Text        
         grantFunder: Party
         applicantList:[GranteeApplication]  
-        awardedTo: GranteeApplication          
+        --awardedTo: GranteeApplication          
       controller grantingAgency
         do create GrantOpportunity with ..
 
-template grantApplication
-    with
-        applicant: Party
-        opportunity: GrantOpportunity
-        grantingAgency: Party
-    where
-      signatory applicant, grantingAgency
+-- template GrantApplication
+--     with
+--         applicant: Party
+--         opportunity: GrantOpportunity
+--         grantingAgency: Party
+--     where
+--       signatory applicant, grantingAgency
 
-      choice SubmitApplication : ContractId GrantOpportunity
-            with
-                granteeApplication: [GranteeApplication]
-        --BPA - is the controller for here supposed to be grantingAgency? 
-        --How does the applicant initate an application submission?
-            controller  applicant  
-                do
-                    let appList = applicantList ++ granteeApplication
-                    --BPA- need a branching code block here think the applicantList is empty by default and need to handle
-                    if applicantList == [] 
-                      then create this with 
-                              applicantList = granteeApplication
-                      else create this with 
-                              applicantList = appList
+--       choice SubmitApplication : ContractId GrantOpportunity
+--             with
+--                 granteeApplication: [GranteeApplication]
+--         --BPA - is the controller for here supposed to be grantingAgency? 
+--         --How does the applicant initate an application submission?
+--             controller  applicant  
+--                 do
+--                     let appList = applicantList ++ granteeApplication
+--                     --BPA- need a branching code block here think the applicantList is empty by default and need to handle
+--                     if applicantList == [] 
+--                       then create this with 
+--                               applicantList = granteeApplication
+--                       else create this with 
+--                               applicantList = appList
 
 template GrantOpportunity
     with       
@@ -69,7 +69,7 @@ template GrantOpportunity
         administrator: Party 
         grantFunder: Party
         applicantList:[GranteeApplication]
-        awardedTo: GranteeApplication 
+        --awardedTo: GranteeApplication 
     where
         ensure totalAmount > 0.0        
         
@@ -95,13 +95,28 @@ template GrantOpportunity
                               
         
         -- pick the successful appliction and update the awarded to flag in the grant
-        choice AwardApplication : ContractId GrantOpportunity
-          with 
-            successfulApplication: GranteeApplication
-          controller  grantingAgency  
-              do
-                create this with awardedTo = successfulApplication
+        -- choice AwardApplication : ContractId GrantOpportunity
+        --   with 
+        --     successfulApplication: GranteeApplication
+        --   controller  grantingAgency  
+        --       do
+        --         create this with awardedTo = successfulApplication
         
+        choice AcceptApplication : ContractId GrantOpportunity
+            with
+                granteeApplication: [GranteeApplication]
+        --BPA - is the controller for here supposed to be grantingAgency? 
+        --How does the applicant initate an application submission?
+            controller  grantingAgency  
+                do
+                    let appList = applicantList ++ granteeApplication
+                    --BPA- need a branching code block here think the applicantList is empty by default and need to handle
+                    if applicantList == [] 
+                      then create this with 
+                              applicantList = granteeApplication
+                      else create this with 
+                              applicantList = appList
+
         -- remove application > 1.15 estimate
         -- choice ScreenApplications : ContractId GrantOpportunity
         --   with
@@ -140,187 +155,79 @@ template AcceptApp
         observer opportunity.grantingAgency 
 -}
 
-test_restrictions : Script (ContractId GrantOpportunity)
+template Application
+  with
+    grantOpportunity: GrantOpportunity
+    applicantInfo: GranteeApplication
+    applicant: Party
+  where
+    signatory applicant
+    observer grantOpportunity.grantingAgency
 
+test_Grants : Script (ContractId GrantOpportunity)
 
-test_restrictions = do
+test_Grants = do
 
+aliceAgency <- allocateParty "AliceAgency1"
+bob <- allocateParty "Bob"    
+charlie <- allocateParty "Charlie"        
+administrator <- allocateParty "Admin"   
+agency <- submit administrator do 
+  createCmd GrantingAgency 
+    with 
+      administrator = administrator 
+      grantingAgency = aliceAgency
 
+let
+  applicant1= GranteeApplication with
+    applicant = bob
+    administrator= administrator
+    applicantOrgnization= "ABC Org"
+    contact = "9876554329"
+    projectTitle = "test project"
+    totalProjectBudget = 100000.00
+    -- Added by Amod: Added the field with value here
+    preScreeningResults = False
 
-    aliceAgency <- allocateParty "AliceAgency1"
-    --admin <- allocateParty "Admin" 
-    bob <- allocateParty "Bob"    
-    charlie <- allocateParty "Charlie"        
-    administrator <- allocateParty "Admin"   
-    
-       
-    aliceAgency2 <- allocateParty "AliceAgency2"
-      
-    agency <- submit administrator do 
-        createCmd GrantingAgency 
-          with 
-            administrator = administrator 
-            grantingAgency = aliceAgency
-    let
-      applicant2= GranteeApplication with
-        applicant = bob
-        administrator= administrator
-        applicantOrgnization= "ABC Org"
-        contact = "9876554329"
-        projectTitle = "test project"
-        totalProjectBudget = 100000.00
-        -- Added by Amod: Added the field with value here
-        preScreeningResults = False
+opportunity1 <- submit aliceAgency do 
+  exerciseCmd agency CreateGrant 
+    with 
+      title = "Opportunity1"                    
+      typeOfGrant= "Type1"
+      description= "Test Opportunity1"
+      totalAmount= 100000.00
+      contact= "9876543298"
+      email= "abc@gmail.com"
+      status="New"
+      grantFunder=bob
+      applicantList=[]
+     -- awardedTo=applicant1
 
-    submit aliceAgency do 
-      exerciseCmd agency CreateGrant 
-        with 
-            title = "Opportunity1"                    
-            typeOfGrant= "Type1"
-            description= "Test Opportunity1"
-            totalAmount= 100000.00
-            contact= "9876543298"
-            email= "abc@gmail.com"
-            status="New"
-            grantFunder=bob
-            applicantList=[]
-            awardedTo=applicant2
+let 
+  var_opportunity1 = GrantOpportunity with
+    title = "Opportunity1"                    
+    typeOfGrant= "Type1"
+    description= "Test Opportunity1"
+    totalAmount= 100000.00
+    contact= "9876543298"
+    email= "abc@gmail.com"
+    status="New"
+    grantFunder=bob
+    applicantList=[]
+    --awardedTo=applicant1
+    grantingAgency=aliceAgency
+    administrator=administrator
 
+accept <- submit bob do
+    createCmd Application
+      with
+        grantOpportunity=  var_opportunity1
+        applicantInfo= applicant1
+        applicant=bob
+
+submit aliceAgency do 
+      exerciseCmd opportunity1 AcceptApplication 
+        with
+            granteeApplication=[applicant1]
    
-    agency2 <- submit administrator do 
-        createCmd GrantingAgency 
-          with 
-            administrator = administrator 
-            grantingAgency = aliceAgency2
-
-    submit aliceAgency2 do 
-      exerciseCmd agency2 CreateGrant 
-        with 
-            title = "Opportunity2"                    
-            typeOfGrant= "Type2"
-            description= "Test Opportunity2"
-            totalAmount= 150000.00
-            contact= "8876543276"
-            email= "xyz@gmail.com"
-            status="New"
-            grantFunder=charlie
-            applicantList=[]
-            awardedTo = applicant2
-
-    -- now <- getTime       
-    -- let duedate = addDays (toDateUTC now) 90
-
-
-  --  alex <- allocateParty "Alex"
-  --  admin <- allocateParty "Admin" 
-    
   
-
-    -- let
-    --     applicant1= GranteeApplication with
-    --       applicant =alex
-    --       administrator= administrator
-    --       applicantOrgnization= "ABC Org"
-    --       contact = "9876554329"
-    --       projectTitle = "test project"
-    --       totalProjectBudget = 100000.00
-    --       amountGranted= 20000.00
-    --       -- Added by Amod: Added the field with value here
-    --       preScreeningResults = False
-    
-    -- ali <- allocateParty "Ali"
-    -- let
-    --     applicant2= GranteeApplication with
-    --       applicant =ali
-    --       administrator= admin
-    --       applicantOrgnization= "ABC Org"
-    --       contact = "9876554329"
-    --       projectTitle = "test project"
-    --       totalProjectBudget = 100000.00
-    --       amountGranted= 20000.00
-    --       -- Added by Amod: Added the field with value here
-    --       preScreeningResults = False
-    
-    -- opportunity1 <- submit aliceAgency do 
-    --        createCmd GrantOpportunity with 
-    --         grantingAgency= aliceAgency
-    --         title = "Opportunity1"                    
-    --         typeOfGrant= "Type1"
-    --         description= "Test Opportunity1"
-    --         totalAmount= 100000.00                     
-    --         status= "Active"        
-    --         contact= "9876543298"
-    --         email= "abc@gmail.com"
-    --         administrator = bob
-    --         grantFunder = charlie
-    --         applicantList=[]
-
-    -- submit aliceAgency1 do
-    --     exerciseCmd opportunity1 AddapplicantInfoInList
-    --         with
-    --             granteeApplicantion= [applicant1]
-
-    -- submit aliceAgency1 do
-    --     exerciseCmd opportunity1 AddapplicantInfoInList
-    --         with
-    --             granteeApplicantion= [applicant2]
-            
-
-        --    applicant =["suchita","Tejesh"]
-            -- granteeApplicantion = Application with
-            --     applicant =ali
-            --     administrator= bob
-            --     applicantOrgnization= "XYZ Org"
-            --     contact = "8765432567"
-            --     projectTitle = "test project2"
-            --     totalProjectBudget = 150000.00
-            --     amountRequested= 25000.00
-            --     projectBegindate= toDateUTC now
-            --     projectEnddate = addDays(toDateUTC now) 90
-            --     bankDetails= bankDetails1
-            --     status= "Active"
-
-
-       
-    -- submit aliceAgency2 do 
-      
-    --     createCmd GrantOpportunity with 
-    --         grantingAgency= aliceAgency2      
-    --         title = "Opportunity2"                    
-    --         typeOfGrant= "Type2"
-    --         description= "Test Opportunity2"
-    --         totalAmount= 150000.00
-    --         postedDate= toDateUTC now
-    --         closingDate= duedate            
-    --         status= "Active"        
-    --         contact= "8176543987"
-    --         email= "xyz@gmail.com"
-    --         administrator = bob
-    --         grantFunder = charlie
-
-    -- submit aliceAgency3 do 
-      
-    --     createCmd GrantOpportunity with 
-    --         grantingAgency= aliceAgency3
-    --         title = "Opportunity3"                    
-    --         typeOfGrant= "Type1"
-    --         description= "Test Opportunity3"
-    --         totalAmount= 300000.00
-    --         postedDate= toDateUTC now
-    --         closingDate= duedate            
-    --         status= "Inactive"        
-    --         contact= "7776543298"
-    --         email= "pqr@gmail.com"
-    --         administrator = bob
-    --         grantFunder = charlie
-            
-            -- submit narendra do
-            --     createCmd opportunity1 DoTechnicalReview with
-            --         technicalReviewDone= "Yes"
-
-            
-            -- submit john do
-            --     exerciseCmd g DoFinancialReview with
-            --         financialReviewDone= "Yes"        
-
-         
