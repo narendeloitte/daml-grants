@@ -11,7 +11,7 @@ dependencies:
   - daml-stdlib
   - daml-script
 init-script: Main:setup
-start-navigator: false
+start-navigator: true
 script-options:
   - --output-file=ui/src/parties.json
 json-api-options:

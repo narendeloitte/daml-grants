@@ -33,6 +33,28 @@ template GrantingAgency
       controller grantingAgency
         do create GrantOpportunity with ..
 
+template grantApplication
+    with
+        applicant: Party
+        opportunity: GrantOpportunity
+        grantingAgency: Party
+    where
+      signatory applicant, grantingAgency
+
+      choice SubmitApplication : ContractId GrantOpportunity
+            with
+                granteeApplication: [GranteeApplication]
+        --BPA - is the controller for here supposed to be grantingAgency? 
+        --How does the applicant initate an application submission?
+            controller  applicant  
+                do
+                    let appList = applicantList ++ granteeApplication
+                    --BPA- need a branching code block here think the applicantList is empty by default and need to handle
+                    if applicantList == [] 
+                      then create this with 
+                              applicantList = granteeApplication
+                      else create this with 
+                              applicantList = appList
 
 template GrantOpportunity
     with       
@@ -68,20 +90,7 @@ template GrantOpportunity
                       grantFunder = grantFunder 
         --add choice to add applicant info to applicantList
         --submitApplication controller applicant
-        choice SubmitApplication : ContractId GrantOpportunity
-            with
-                granteeApplication: [GranteeApplication]
-        --BPA - is the controller for here supposed to be grantingAgency? 
-        --How does the applicant initate an application submission?
-            controller  grantingAgency  
-                do
-                    let appList = applicantList ++ granteeApplication
-                    --BPA- need a branching code block here think the applicantList is empty by default and need to handle
-                    if applicantList == [] 
-                      then create this with 
-                              applicantList = granteeApplication
-                      else create this with 
-                              applicantList = appList
+        
                               -- TODO: Logic to add elements to the list
                               
         
