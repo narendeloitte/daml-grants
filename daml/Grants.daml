@@ -5,6 +5,7 @@ import ApplicantInfo
 
 
 type GrantOpportunityId = ContractId GrantOpportunity
+type GrantAppId = ContractId GranteeApplication
 
 template GrantingAgency 
   with 
@@ -175,6 +176,21 @@ template GrantOpportunityApplications
                 granteeApplicationList = granteeApplication
             else create this with 
                 granteeApplicationList = allAppList
+
+    --BPA - blocked having issue acessing the elements of each GranteeApplication in granteeApplicatiomList.
+    --Current code has a type error since the lambda funciton is set to compare the elements in GranteeApplication but is being compared to a type of [GranteeApplication]
+    choice ReviewApplications: ContractId GrantOpportunityApplications
+      with
+        --granteeApplication: [GranteeApplication]
+     
+      controller grantOpportunity.grantingAgency    
+       do
+        let overBudget = 1.15*grantOpportunity.totalAmount
+        let filteredAppList = filter (\(_,_,_,_,_,totalProjectBudget,_) -> totalProjectBudget < overBudget) granteeApplicationList                     
+        create this with 
+                granteeApplicationList = filteredAppList
+    
+    --choice AwardApplications once access issue on filter is solved this can be implemented the same way
 
 test_Grants : Script (ContractId GrantOpportunityApplications)
 

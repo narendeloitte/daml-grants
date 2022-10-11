@@ -26,4 +26,38 @@ template Award
         signatory grantingAgency,grantFunder,grantRecipient
         observer administrator
 
-        -- add should logic for funding/disburse be here instead of in grant template?
+
+
+-- to delete - was testing accessing a list object while filtering
+template TestData
+    with
+        me: Party
+        name: Text
+        budget: Int 
+    where
+        signatory me
+
+template TestGrant
+    with
+        me: Party
+        testList: [TestData] --contractId,ContractId,ContractId getField @"bar" r
+    where
+        signatory me
+        choice FilterList : ContractId TestGrant
+            controller me
+            do
+                let allAppList = testList 
+                let oddList = filter (\(_,_,a) -> (a > 2)) allAppList
+                create this with testList = oddList                 
+                
+test_Award : Script (ContractId TestGrant)
+test_Award = do
+
+    aliceAgency <- allocateParty "AliceAgency"
+    contract1 <- submit aliceAgency do 
+        createCmd TestGrant with me = aliceAgency, testList = [(1,2),(3,4),(5,6)]
+    submit aliceAgency do
+        exerciseCmd contract1 FilterList
+
+
+
