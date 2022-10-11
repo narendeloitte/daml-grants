@@ -38,6 +38,7 @@ template PreScreeningAgency
                     with
                     -- Since its optional, we cannot directly assign it to True/False
                     preScreeningResults = True
+                    reviewStatus = False
                     ..
     
 

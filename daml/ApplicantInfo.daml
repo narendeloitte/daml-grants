@@ -32,6 +32,7 @@ template Applicant
             assertMsg "PreScreening completion is mandatory." (preScreeningResults)            
             create GranteeApplication 
                     with 
+                    reviewStatus = False
                     ..
 
 template GranteeApplication
@@ -46,6 +47,8 @@ template GranteeApplication
     -- User Story (6) Task (1)
     -- 'preScreeningResults' variable indicates if the Pre-Screening validation is success/failure
     preScreeningResults: Bool
+    -- added by AMod
+    reviewStatus: Bool
     
   where  
     ensure  totalProjectBudget >0.00 

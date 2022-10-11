@@ -2,6 +2,7 @@ module Grants where
 
 import Daml.Script
 import ApplicantInfo
+import DA.Foldable (forA_)
 
 
 type GrantOpportunityId = ContractId GrantOpportunity
@@ -175,6 +176,36 @@ template GrantOpportunityApplications
                 granteeApplicationList = granteeApplication
             else create this with 
                 granteeApplicationList = allAppList
+
+    -- added by Amod
+    -- Choice for Review Application
+    choice ReviewApplication: ContractId GrantOpportunityApplications
+      with
+        granteeApplication: [GranteeApplication]
+      controller grantOpportunity.grantingAgency    
+        do             
+          forA_ [0..(length granteeApplication)] $ \ i' -> do
+            let granteeApplicationTest = granteeApplication[i]
+            -- total project 
+            if(granteeApplicationTest.totalProjectBudget > (granteeApplicationTest.totalAmount * 0.15) )
+                then 
+                    let granteeApplicationTest.reviewStatus = False
+                else 
+                    let granteeApplicationTest.reviewStatus = True
+
+            granteeApplication[i] = granteeApplicationTest
+        
+        create this 
+          with granteeApplicationList = granteeApplication
+                
+
+
+
+
+        -- do forA : [GranteeApplication] -> (
+        --      GranteeApplication -> Update (ContractId GrantOpportunityApplications)
+        --                       ) -> Update [ContractId GrantOpportunityApplications]
+      -- do forA granteeApplication (\gApp -> create GrantOpportunityApplications with gApp)
 
 test_Grants : Script (ContractId GrantOpportunityApplications)
 
