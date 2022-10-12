@@ -184,9 +184,9 @@ template GrantOpportunityApplications
     -- can we ensure this occurs before award? or do we need to rethink the logic
     choice ReviewApplications: ContractId GrantOpportunityApplications
       with     
-      controller grantOpportunity.grantingAgency    
+      controller technicalReviewer -- added technicalReviewer as a controller
        do
-        let overBudget = 1.15*grantOpportunity.totalAmount
+        let overBudget = 0.15*grantOpportunity.totalAmount -- replace 1.15 with 0.15
         let tempList = granteeApplicationList
         let filteredAppList = filter (\e -> e.totalProjectBudget < overBudget) granteeApplicationList                    
         create this with 
