@@ -9,18 +9,18 @@ test_GrantingProcess : Script (ContractId GrantOpportunityApplications)
 test_GrantingProcess = do
 
 deloitteAgency <- allocateParty "DeloitteAgency"
-funder <- allocateParty "Funder"    
+deloittefunder <- allocateParty "DeloitteFunder"    
 deloitteAdmin <- allocateParty "DeloitteAdmin"   
 
-jijaApplicant <- allocateParty "JijaApplicant"
+deloitteApplicant1 <- allocateParty "DeloitteApplicant1"
   
 applicantData1 <- submit deloitteAdmin do
     createCmd Applicant
       with  
         administrator = deloitteAdmin
-        applicant = jijaApplicant  
+        applicant = deloitteApplicant1  
 
-submit jijaApplicant do
+submit deloitteApplicant1 do
     exerciseCmd applicantData1 CreateApplicantInfo
       with
           applicantOrgnization= "Jija Org"
@@ -29,15 +29,15 @@ submit jijaApplicant do
           totalProjectBudget = 150000.00          
           preScreeningResults = True
        
-sophee <- allocateParty "SopheeApplicant"
+deloitteApplicant2 <- allocateParty "DeloitteApplicant2"
   
 applicantData2 <- submit deloitteAdmin do
     createCmd Applicant
       with  
         administrator = deloitteAdmin
-        applicant = sophee  
+        applicant = deloitteApplicant2  
 
-submit sophee do
+submit deloitteApplicant2 do
     exerciseCmd applicantData2 CreateApplicantInfo
       with
           applicantOrgnization= "Sophee Org"
@@ -47,15 +47,15 @@ submit sophee do
           preScreeningResults = True
 
 
-narendraApplicant <- allocateParty "NarendraApplicant"
+deloitteApplicant3 <- allocateParty "DeloitteApplicant3"
   
 applicantData3 <- submit deloitteAdmin do
     createCmd Applicant
       with  
         administrator = deloitteAdmin
-        applicant = narendraApplicant  
+        applicant = deloitteApplicant3  
 
-submit narendraApplicant do
+submit deloitteApplicant3 do
     exerciseCmd applicantData3 CreateApplicantInfo
       with
           applicantOrgnization= "Narendra Org"
@@ -81,7 +81,7 @@ submit deloitteAgency do
       contact= "9876543298"
       email= "abc@gmail.com"
       status="New"
-      grantFunder=funder
+      grantFunder=deloittefunder
 
 
 technicalReviewer <- allocateParty"TechnicalReviewer"
@@ -94,7 +94,7 @@ let
       contact= "9876543298"
       email= "abc@gmail.com"
       status="New"
-      grantFunder=funder
+      grantFunder=deloittefunder
       grantingAgency=deloitteAgency
       administrator=deloitteAdmin
 let
@@ -104,7 +104,7 @@ let
           projectTitle = "test project1"
           totalProjectBudget = 150000.00          
           preScreeningResults = True
-          applicant=jijaApplicant
+          applicant=deloitteApplicant1
           administrator=deloitteAdmin
        
 
@@ -121,7 +121,7 @@ grantOppApplication <- submit deloitteAgency do
       
 let
     applicantSophee = GranteeApplication with
-      applicant = sophee
+      applicant = deloitteApplicant2
       applicantOrgnization= "Sophee Org"
       contact = "9876567654"
       projectTitle = "test project2"
