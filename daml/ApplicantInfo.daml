@@ -20,7 +20,7 @@ template Applicant
             applicantOrgnization: Text    
             contact : Text
             projectTitle: Text
-            totalProjectBudget: Decimal             
+            totalProjectBudget: Numeric 2             
             preScreeningResults: Bool
       
                         
@@ -41,7 +41,7 @@ template GranteeApplication
     applicantOrgnization: Text    
     contact : Text
     projectTitle: Text
-    totalProjectBudget: Decimal     
+    totalProjectBudget: Numeric 2     
     -- added by Amod 
     -- User Story (6) Task (1)
     -- 'preScreeningResults' variable indicates if the Pre-Screening validation is success/failure
