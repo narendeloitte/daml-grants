@@ -8,19 +8,19 @@ test_GrantingProcess : Script (ContractId GrantOpportunityApplications)
 
 test_GrantingProcess = do
 
-aliceAgency <- allocateParty "AliceAgency"
-bob <- allocateParty "Bob"    
-administrator <- allocateParty "Admin"   
+deloitteAgency <- allocateParty "DeloitteAgency"
+funder <- allocateParty "Funder"    
+deloitteAdmin <- allocateParty "DeloitteAdmin"   
 
-jija <- allocateParty "Jija"
+jijaApplicant <- allocateParty "JijaApplicant"
   
-applicantData1 <- submit administrator do
+applicantData1 <- submit deloitteAdmin do
     createCmd Applicant
       with  
-        administrator = administrator
-        applicant = jija  
+        administrator = deloitteAdmin
+        applicant = jijaApplicant  
 
-submit jija do
+submit jijaApplicant do
     exerciseCmd applicantData1 CreateApplicantInfo
       with
           applicantOrgnization= "Jija Org"
@@ -29,12 +29,12 @@ submit jija do
           totalProjectBudget = 150000.00          
           preScreeningResults = True
        
-sophee <- allocateParty "Sophee"
+sophee <- allocateParty "SopheeApplicant"
   
-applicantData2 <- submit administrator do
+applicantData2 <- submit deloitteAdmin do
     createCmd Applicant
       with  
-        administrator = administrator
+        administrator = deloitteAdmin
         applicant = sophee  
 
 submit sophee do
@@ -47,15 +47,15 @@ submit sophee do
           preScreeningResults = True
 
 
-narendra <- allocateParty "Narendra"
+narendraApplicant <- allocateParty "NarendraApplicant"
   
-applicantData3 <- submit administrator do
+applicantData3 <- submit deloitteAdmin do
     createCmd Applicant
       with  
-        administrator = administrator
-        applicant = narendra  
+        administrator = deloitteAdmin
+        applicant = narendraApplicant  
 
-submit narendra do
+submit narendraApplicant do
     exerciseCmd applicantData3 CreateApplicantInfo
       with
           applicantOrgnization= "Narendra Org"
@@ -65,13 +65,13 @@ submit narendra do
           preScreeningResults = True
        
 
-agency1 <- submit administrator do 
+agency1 <- submit deloitteAdmin do 
   createCmd GrantingAgency 
     with 
-      administrator = administrator 
-      grantingAgency = aliceAgency
+      administrator = deloitteAdmin 
+      grantingAgency = deloitteAgency
 
-submit aliceAgency do 
+submit deloitteAgency do 
   exerciseCmd agency1 CreateGrant 
     with 
       title = "Opportunity1"                    
@@ -81,7 +81,7 @@ submit aliceAgency do
       contact= "9876543298"
       email= "abc@gmail.com"
       status="New"
-      grantFunder=bob
+      grantFunder=funder
 
 
 technicalReviewer <- allocateParty"TechnicalReviewer"
@@ -94,9 +94,9 @@ let
       contact= "9876543298"
       email= "abc@gmail.com"
       status="New"
-      grantFunder=bob
-      grantingAgency=aliceAgency
-      administrator=administrator
+      grantFunder=funder
+      grantingAgency=deloitteAgency
+      administrator=deloitteAdmin
 let
     applicantJija = GranteeApplication with
           applicantOrgnization= "Jija Org"
@@ -104,13 +104,13 @@ let
           projectTitle = "test project1"
           totalProjectBudget = 150000.00          
           preScreeningResults = True
-          applicant=jija
-          administrator=administrator
+          applicant=jijaApplicant
+          administrator=deloitteAdmin
        
 
 technicalReviewer <- allocateParty"TechnicalReviewer"
 
-grantOppApplication <- submit aliceAgency do
+grantOppApplication <- submit deloitteAgency do
   createCmd GrantOpportunityApplications
     with
       grantOpportunity =var_opportunity1
@@ -125,32 +125,11 @@ let
       projectTitle = "test project2"
       totalProjectBudget = 200000.00          
       preScreeningResults = True
-      administrator=administrator
+      administrator=deloitteAdmin
 
-submit aliceAgency do
+submit deloitteAgency do
   exerciseCmd grantOppApplication AppendApplications
     with
       granteeApplication=[applicantSophee] 
-
-
--- alexAgency <- allocateParty "AlexAgency"
-
--- agency2 <- submit administrator do 
---   createCmd GrantingAgency 
---     with 
---       administrator = administrator 
---       grantingAgency = alexAgency
-
--- submit alexAgency do 
---   exerciseCmd agency2 CreateGrant 
---     with 
---       title = "Opportunity2"                    
---       typeOfGrant= "Type2"
---       description= "Test Opportunity3"
---       totalAmount= 150000.00
---       contact= "8765456765"
---       email= "xyz@gmail.com"
---       status="New"
---       grantFunder=bob
 
 

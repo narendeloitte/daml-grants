@@ -2,15 +2,18 @@ sdk-version: 2.3.4
 name: daml-grants
 source: daml
 parties:
-  - Alice
-  - Bob
-  - Charlie
+  - DeloitteAgency
+  - Funder
+  - DeloitteAdmin
+  - JijaApplicant
+  - NarendraApplicant
+  - TechnicalReviewer
 version: 0.0.1
 dependencies:
   - daml-prim
   - daml-stdlib
   - daml-script
-init-script: Main:setup
+init-script: TestCases:test_GrantingProcess
 start-navigator: true
 script-options:
   - --output-file=ui/src/parties.json
