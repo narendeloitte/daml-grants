@@ -4,7 +4,7 @@ module PreScreening where
 -- import Grants
 import ApplicantInfo
 
-
+{-
 -- PreScreening Agency will perform the necessary steps for PreScreening
 -- TODO: Need to decide what validations we need to perform
 template PreScreeningAgency 
@@ -40,4 +40,4 @@ template PreScreeningAgency
                     preScreeningResults = True
                     ..
     
-
+-}

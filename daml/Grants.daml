@@ -2,6 +2,7 @@ module Grants where
 
 import Daml.Script
 import ApplicantInfo
+import DA.List (head)
 
 
 type GrantOpportunityId = ContractId GrantOpportunity
@@ -161,6 +162,8 @@ template GrantOpportunityApplications
     grantOpportunity: GrantOpportunity
     granteeApplicationList: [GranteeApplication]
     technicalReviewer: Party
+    granteeApplicationPassedList: [GranteeApplication]
+    granteeApplicationAwarded: GranteeApplication
   where
     signatory grantOpportunity.grantingAgency
     observer technicalReviewer
@@ -187,7 +190,7 @@ template GrantOpportunityApplications
         let tempList = granteeApplicationList
         let filteredAppList = filter (\e -> e.totalProjectBudget < overBudget) granteeApplicationList                    
         create this with 
-                granteeApplicationList = filteredAppList
+                granteeApplicationPassedList = filteredAppList
     
     -- choice AwardApplications once access issue on filter is solved this can be implemented the same way
     -- take the first item where the application has passed
@@ -195,8 +198,9 @@ template GrantOpportunityApplications
       with
       controller grantOpportunity.grantingAgency
        do
-        let awardedContract = take 1 granteeApplicationList
-        create this 
+        let awardedContract = head granteeApplicationPassedList
+        create this with granteeApplicationAwarded = awardedContract
+
         
 
 test_Grants : Script (ContractId GrantOpportunityApplications)
@@ -258,6 +262,8 @@ final1 <- submit aliceAgency do
       grantOpportunity =var_opportunity1
       granteeApplicationList =[applicantAlice]
       technicalReviewer=technicalReviewer
+      granteeApplicationPassedList = []
+      granteeApplicationAwarded = applicantAlice -- update script to include rveiw and award logic
       
 let
     applicantJija = GranteeApplication with
