@@ -116,7 +116,9 @@ grantOppApplication <- submit deloitteAgency do
       grantOpportunity =var_opportunity1
       granteeApplicationList =[applicantJija]
       technicalReviewer=technicalReviewer
-
+      granteeApplicationPassedList = []
+      granteeApplicationAwarded = applicantJija -- update script to include rveiw and award logic
+      
 let
     applicantSophee = GranteeApplication with
       applicant = sophee
