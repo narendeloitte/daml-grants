@@ -2,11 +2,11 @@ sdk-version: 2.3.4
 name: daml-grants
 source: daml
 parties:
-  - AliceAgency
-  - Bob
-  - Admin
-  - Jija
-  - Narendra
+  - DeloitteAgency
+  - Funder
+  - DeloitteAdmin
+  - JijaApplicant
+  - NarendraApplicant
   - TechnicalReviewer
 version: 0.0.1
 dependencies:
