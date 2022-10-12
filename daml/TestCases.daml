@@ -1,4 +1,4 @@
- module TestCases where
+module TestCases where
 
 import Grants
 import Daml.Script
@@ -26,7 +26,7 @@ submit deloitteApplicant1 do
           applicantOrgnization= "Jija Org"
           contact = "8765432567"
           projectTitle = "test project1"
-          totalProjectBudget = 150000.00          
+          totalProjectBudget = 50000.00          
           preScreeningResults = True
        
 deloitteApplicant2 <- allocateParty "DeloitteApplicant2"
@@ -43,7 +43,7 @@ submit deloitteApplicant2 do
           applicantOrgnization= "Sophee Org"
           contact = "9876567654"
           projectTitle = "test project2"
-          totalProjectBudget = 200000.00          
+          totalProjectBudget = 20000.00          
           preScreeningResults = True
 
 
@@ -102,7 +102,7 @@ let
           applicantOrgnization= "Jija Org"
           contact = "8765432567"
           projectTitle = "test project1"
-          totalProjectBudget = 150000.00          
+          totalProjectBudget = 5000.00          
           preScreeningResults = True
           applicant=deloitteApplicant1
           administrator=deloitteAdmin
@@ -125,13 +125,23 @@ let
       applicantOrgnization= "Sophee Org"
       contact = "9876567654"
       projectTitle = "test project2"
-      totalProjectBudget = 200000.00          
+      totalProjectBudget = 20000.00          
       preScreeningResults = True
       administrator=deloitteAdmin
 
-submit deloitteAgency do
+grantOppApplication1 <- submit deloitteAgency do
   exerciseCmd grantOppApplication AppendApplications
     with
       granteeApplication=[applicantSophee] 
+
+
+
+finalgrantOppApplication1 <- submit technicalReviewer do
+  exerciseCmd grantOppApplication1 ReviewApplications
+    with
+
+submit deloitteAgency do
+  exerciseCmd finalgrantOppApplication1 AwardApplications
+    with
 
 
