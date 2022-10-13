@@ -26,7 +26,7 @@ submit deloitteApplicant1 do
           applicantOrgnization= "Jija Org"
           contact = "8765432567"
           projectTitle = "test project1"
-          totalProjectBudget = 50000.00          
+          totalProjectBudget = 5000.00          
           preScreeningResults = True
        
 deloitteApplicant2 <- allocateParty "DeloitteApplicant2"
@@ -43,7 +43,7 @@ submit deloitteApplicant2 do
           applicantOrgnization= "Sophee Org"
           contact = "9876567654"
           projectTitle = "test project2"
-          totalProjectBudget = 20000.00          
+          totalProjectBudget = 2000.00          
           preScreeningResults = True
 
 
@@ -125,7 +125,7 @@ let
       applicantOrgnization= "Sophee Org"
       contact = "9876567654"
       projectTitle = "test project2"
-      totalProjectBudget = 20000.00          
+      totalProjectBudget = 2000.00          
       preScreeningResults = True
       administrator=deloitteAdmin
 
