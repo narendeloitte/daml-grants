@@ -1,14 +1,14 @@
 sdk-version: 2.3.4
 name: daml-grants
 source: daml
-parties:
-  - DeloitteAgency
-  - DeloitteFunder
-  - DeloitteAdmin
-  - DeloitteApplicant1
-  - DeloitteApplicant2
-  - DeloitteApplicant3
-  - deloitteTechnicalReviewer
+# parties:
+#   - DeloitteAgency
+#   - DeloitteFunder
+#   - DeloitteAdmin
+#   - DeloitteApplicant1
+#   - DeloitteApplicant2
+#   - DeloitteApplicant3
+#   - deloitteTechnicalReviewer
 version: 0.0.1
 dependencies:
   - daml-prim
@@ -18,6 +18,8 @@ init-script: TestCases:test_GrantingProcess
 start-navigator: true
 script-options:
   - --output-file=ui/src/parties.json
+# navigator-options:
+#   - --feature-user-management=false
 json-api-options:
   - --address=0.0.0.0
 codegen:

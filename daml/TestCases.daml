@@ -8,11 +8,36 @@ test_GrantingProcess : Script (ContractId GrantOpportunityApplications)
 
 test_GrantingProcess = do
 
-deloitteAgency <- allocateParty "DeloitteAgency"
-deloittefunder <- allocateParty "DeloitteFunder"    
-deloitteAdmin <- allocateParty "DeloitteAdmin"   
+   
 
-deloitteApplicant1 <- allocateParty "DeloitteApplicant1"
+deloitteAdmin <- allocatePartyWithHint "DeloitteAdmin" (PartyIdHint "DeloitteAdmin")
+deloitteApplicant1 <- allocatePartyWithHint "DeloitteApplicant1" (PartyIdHint "DeloitteApplicant1")
+deloitteApplicant2 <- allocatePartyWithHint "DeloitteApplicant2" (PartyIdHint "DeloitteApplicant2")
+deloitteApplicant3 <- allocatePartyWithHint "DeloitteApplicant3" (PartyIdHint "DeloitteApplicant3")
+deloitteApplicant4 <- allocatePartyWithHint "DeloitteApplicant4" (PartyIdHint "DeloitteApplicant4")
+deloitteTechnicalReviewer <- allocatePartyWithHint "DeloitteTechnicalReviewer" (PartyIdHint "DeloitteTechnicalReviewer")
+deloitteAgency <- allocatePartyWithHint "DeloitteAgency" (PartyIdHint "DeloitteAgency")
+deloittefunder <- allocatePartyWithHint "DeloitteFunder"  (PartyIdHint "DeloitteFunder")
+
+deloitteadminId <- validateUserId "deloitteadmin"
+deloitteApplicantId <- validateUserId "deloitteapplicant1"
+deloitteApplicant2Id <- validateUserId "deloitteapplicant2"
+deloitteApplicant3Id <- validateUserId "deloitteapplicant3"
+deloitteApplicant4Id <- validateUserId "deloitteapplicant4"
+deloitteTechnicalReviewerId <- validateUserId "deloittetechnicalreviewer"
+deloitteAgencyId <- validateUserId "deloitteagency"
+deloitteFunderId <- validateUserId "deloittefunder"
+
+createUser (User deloitteadminId (Some deloitteAdmin)) [CanActAs deloitteAdmin]
+createUser (User deloitteApplicantId (Some deloitteApplicant1)) [CanActAs deloitteApplicant1]
+createUser (User deloitteApplicant2Id (Some deloitteApplicant2)) [CanActAs deloitteApplicant2]
+createUser (User deloitteApplicant3Id (Some deloitteApplicant3)) [CanActAs deloitteApplicant3]
+createUser (User deloitteApplicant4Id (Some deloitteApplicant4)) [CanActAs deloitteApplicant4]
+createUser (User deloitteTechnicalReviewerId (Some deloitteTechnicalReviewer)) [CanActAs deloitteTechnicalReviewer]
+createUser (User deloitteAgencyId (Some deloitteAgency)) [CanActAs deloitteAgency]
+createUser (User deloitteFunderId (Some deloittefunder)) [CanActAs deloittefunder]
+
+
   
 applicantData1 <- submit deloitteAdmin do
     createCmd Applicant
@@ -29,7 +54,7 @@ submit deloitteApplicant1 do
           totalProjectBudget = 5000.00          
           preScreeningResults = True
        
-deloitteApplicant2 <- allocateParty "DeloitteApplicant2"
+--deloitteApplicant2 <- allocateParty "DeloitteApplicant2"
   
 applicantData2 <- submit deloitteAdmin do
     createCmd Applicant
@@ -46,7 +71,7 @@ submit deloitteApplicant2 do
           totalProjectBudget = 2000.00          
           preScreeningResults = True
 
-deloitteApplicant3 <- allocateParty "DeloitteApplicant3"
+-- deloitteApplicant3 <- allocateParty "DeloitteApplicant3"
   
 applicantData3 <- submit deloitteAdmin do
     createCmd Applicant
@@ -81,7 +106,7 @@ submit deloitteAgency do
       status="New"
       grantFunder=deloittefunder
 
-deloitteTechnicalReviewer <- allocateParty"DeloitteTechnicalReviewer"
+-- deloitteTechnicalReviewer <- allocateParty"DeloitteTechnicalReviewer"
 let 
   var_opportunity1 = GrantOpportunity with
       title = "Opportunity1"                    
