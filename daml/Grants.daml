@@ -30,33 +30,8 @@ template GrantingAgency
         contact: Text
         email: Text        
         grantFunder: Party
-       -- applicantList:[GranteeApplication]  
-       --awardedTo: GranteeApplication          
       controller grantingAgency
         do create GrantOpportunity with ..
-
--- template GrantApplication
---     with
---         applicant: Party
---         opportunity: GrantOpportunity
---         grantingAgency: Party
---     where
---       signatory applicant, grantingAgency
-
---       choice SubmitApplication : ContractId GrantOpportunity
---             with
---                 granteeApplication: [GranteeApplication]
---         --BPA - is the controller for here supposed to be grantingAgency? 
---         --How does the applicant initate an application submission?
---             controller  applicant  
---                 do
---                     let appList = applicantList ++ granteeApplication
---                     --BPA- need a branching code block here think the applicantList is empty by default and need to handle
---                     if applicantList == [] 
---                       then create this with 
---                               applicantList = granteeApplication
---                       else create this with 
---                               applicantList = appList
 
 template GrantOpportunity
     with       
@@ -70,8 +45,6 @@ template GrantOpportunity
         email: Text
         administrator: Party 
         grantFunder: Party
-        --applicantList:[GranteeApplication]
-        --awardedTo: GranteeApplication 
     where
         ensure totalAmount > 0.0        
         
@@ -90,72 +63,7 @@ template GrantOpportunity
                       status = "Funded"
                       totalAmount = fundAmount
                       grantFunder = grantFunder 
-        --add choice to add applicant info to applicantList
-        --submitApplication controller applicant
-        
-                              -- TODO: Logic to add elements to the list
-                              
-        
-        -- pick the successful appliction and update the awarded to flag in the grant
-        -- choice AwardApplication : ContractId GrantOpportunity
-        --   with 
-        --     successfulApplication: GranteeApplication
-        --   controller  grantingAgency  
-        --       do
-        --         create this with awardedTo = successfulApplication
-        
-        -- choice AcceptApplication : ContractId GrantOpportunity
-        --     with
-        --         granteeApplication: [GranteeApplication]
-        -- --BPA - is the controller for here supposed to be grantingAgency? 
-        -- --How does the applicant initate an application submission?
-        --     controller  grantingAgency  
-        --         do
-        --             let appList = applicantList ++ granteeApplication
-        --             --BPA- need a branching code block here think the applicantList is empty by default and need to handle
-        --             if applicantList == [] 
-        --               then create this with 
-        --                       applicantList = granteeApplication
-        --               else create this with 
-        --                       applicantList = appList
-
-        -- -- remove application > 1.15 estimate
-        -- choice ScreenApplications : ContractId GrantOpportunity
-        --   with
-
-        --   controller grantingAgency
-        --       do
-        --         --let appList = filter( where granteeApp.totalBudget > 1.15 * total ammount
-        --         --create this with applicantList = appList
-        --         ..
-
-        -- choice DoTechnicalReview: GrantOpportunityId
-        --     with
-        --         agreeOrNot: Text                
-        --     controller technicalReviewer 
-        --         do
-        --             create this with
-        --                 technicalReviewDone = agreeOrNot
-            
-
-        -- choice DoFinancialReview: GrantOpportunityId
-        --     with
-        --         agreeOrNot: Text
-        --     controller financialReviewer 
-        --         do
-        --             create this with 
-        --                 financialReviewDone = agreeOrNot
---create template to open apps for submission
---will allow an applicant to submit then the choice w/in grantOpp will allow updating the contract               
-{-
-template AcceptApp
-    with
-        opportunity: GrantOpportunity
-        application: GranteeApplication
-    where
-        signatory application.applicant
-        observer opportunity.grantingAgency 
--}
+       
 
 template GrantOpportunityApplications
   with

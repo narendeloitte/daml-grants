@@ -3,11 +3,12 @@ name: daml-grants
 source: daml
 parties:
   - DeloitteAgency
-  - Funder
+  - DeloitteFunder
   - DeloitteAdmin
-  - JijaApplicant
-  - NarendraApplicant
-  - TechnicalReviewer
+  - DeloitteApplicant1
+  - DeloitteApplicant2
+  - DeloitteApplicant3
+  - deloitteTechnicalReviewer
 version: 0.0.1
 dependencies:
   - daml-prim

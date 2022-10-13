@@ -46,7 +46,6 @@ submit deloitteApplicant2 do
           totalProjectBudget = 2000.00          
           preScreeningResults = True
 
-
 deloitteApplicant3 <- allocateParty "DeloitteApplicant3"
   
 applicantData3 <- submit deloitteAdmin do
@@ -62,8 +61,7 @@ submit deloitteApplicant3 do
           contact = "7787654344"
           projectTitle = "test project3"
           totalProjectBudget = 120000.00          
-          preScreeningResults = True
-       
+          preScreeningResults = True       
 
 agency1 <- submit deloitteAdmin do 
   createCmd GrantingAgency 
@@ -83,8 +81,7 @@ submit deloitteAgency do
       status="New"
       grantFunder=deloittefunder
 
-
-technicalReviewer <- allocateParty"TechnicalReviewer"
+deloitteTechnicalReviewer <- allocateParty"DeloitteTechnicalReviewer"
 let 
   var_opportunity1 = GrantOpportunity with
       title = "Opportunity1"                    
@@ -105,17 +102,14 @@ let
           totalProjectBudget = 5000.00          
           preScreeningResults = True
           applicant=deloitteApplicant1
-          administrator=deloitteAdmin
-       
-
-technicalReviewer <- allocateParty"TechnicalReviewer"
+          administrator=deloitteAdmin       
 
 grantOppApplication <- submit deloitteAgency do
   createCmd GrantOpportunityApplications
     with
       grantOpportunity =var_opportunity1
       granteeApplicationList =[applicantJija]
-      technicalReviewer=technicalReviewer
+      technicalReviewer=deloitteTechnicalReviewer
       granteeApplicationPassedList = []
       granteeApplicationAwarded = applicantJija -- update script to include rveiw and award logic
       
@@ -134,14 +128,10 @@ grantOppApplication1 <- submit deloitteAgency do
     with
       granteeApplication=[applicantSophee] 
 
-
-
-finalgrantOppApplication1 <- submit technicalReviewer do
+finalgrantOppApplication1 <- submit deloitteTechnicalReviewer do
   exerciseCmd grantOppApplication1 ReviewApplications
     with
 
 submit deloitteAgency do
   exerciseCmd finalgrantOppApplication1 AwardApplications
     with
-
-
