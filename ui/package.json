@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@daml.js/daml-grants-0.0.1": "file:./daml.js/daml-grants-0.0.1",
+    "@daml.js/daml-grants-0.0.1": "file:../daml.js/daml-grants-0.0.1",
     "@daml/ledger": "2.3.4",
     "@daml/react": "2.3.4",
     "@daml/types": "2.3.4",

@@ -6,7 +6,8 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Fade from "@material-ui/core/Fade";
-import { useUserDispatch, loginUser } from "../../context/UserContext";
+import { useUserDispatch, loginUser, loginDablUser } from "../../context/UserContext";
+import { isLocalDev } from "../../config";
 import useStyles from "./styles";
 import logo from "./logo.svg";
 
@@ -22,7 +23,7 @@ const Login = (props : RouteComponentProps) => {
     <Grid container className={classes.container}>
       <div className={classes.logotypeContainer}>
         <img src={logo} alt="logo" className={classes.logotypeImage} />
-        <Typography className={classes.logotypeText}>App Template</Typography>
+        <Typography className={classes.logotypeText}>Grants</Typography>
       </div>
       <div className={classes.formContainer}>
         <div className={classes.form}>
@@ -32,6 +33,15 @@ const Login = (props : RouteComponentProps) => {
                   Something is wrong with your login or password :(
                 </Typography>
               </Fade>
+              {!isLocalDev &&
+                <>
+                  <Button className={classes.dablLoginButton} variant="contained" color="primary" size="large" onClick={loginDablUser}>
+                    Log in with DABL
+                  </Button>
+                  <Typography>
+                    OR
+                  </Typography>
+                </>}
               <TextField
                 id="email"
                 InputProps={{

@@ -6,7 +6,7 @@ build:
 
 deploy:	build 
 	mkdir -p deploy 
-	cp nft/.daml/dist/*.dar deploy
+	cp daml-grants/.daml/dist/*.dar deploy
 	
 clean:
 	cd daml-grants && rm -rf .daml
