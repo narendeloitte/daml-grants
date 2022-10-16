@@ -1,14 +1,14 @@
 sdk-version: 2.3.4
 name: daml-grants
 source: daml
-# parties:
-#   - DeloitteAgency
-#   - DeloitteFunder
-#   - DeloitteAdmin
-#   - DeloitteApplicant1
-#   - DeloitteApplicant2
-#   - DeloitteApplicant3
-#   - deloitteTechnicalReviewer
+parties:
+   - DeloitteAgency
+   - DeloitteFunder
+   - DeloitteAdmin
+   - DeloitteApplicant1
+   - DeloitteApplicant2
+   - DeloitteApplicant3
+   - deloitteTechnicalReviewer
 version: 0.0.1
 dependencies:
   - daml-prim
