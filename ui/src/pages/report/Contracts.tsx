@@ -8,11 +8,11 @@ import Button from "@material-ui/core/Button";
 import Ledger from "@daml/ledger";
 import { useLedger, useParty, useStreamQueries} from "@daml/react";
 import { ContractId } from "@daml/types";
-import { Token, TokenOffer } from "@daml.js/nft-0.0.1/lib/Token"
+import { Token, TokenOffer } from "@daml.js/daml-grants-0.0.1/lib/Token"
 import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
-import { Owner, OwnerRequest } from "@daml.js/nft-0.0.1/lib/UserAdmin";
-import { Offer } from "@daml.js/nft-0.0.1/lib/Token";
+import { Owner, OwnerRequest } from "@daml.js/daml-grants-0.0.1/lib/UserAdmin";
+import { Offer } from "@daml.js/daml-grants-0.0.1/lib/Token";
 import { GridList, GridListTile, GridListTileBar, IconButton, Popover, Typography } from "@material-ui/core";
 import { fetchWellKnownParties } from "./wellKnownParties";
 import { CallMade, CallReceived, Check } from "@material-ui/icons";
@@ -78,7 +78,7 @@ export default function MyTokens() {
 
   const defaultOfferProps : InputDialogProps<Offer> = {
     open: false,
-    title: "Offer NFT",
+    title: "Offer Grant",
     defaultValue: { 
       newOwner : "",
       price: "" 
@@ -89,7 +89,7 @@ export default function MyTokens() {
         type: "text"
       },
       price: {
-        label: "Offer Price",
+        label: "Grant Offer Amount",
         type: "number"
       }
     },
