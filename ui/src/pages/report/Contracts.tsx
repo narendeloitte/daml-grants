@@ -26,15 +26,15 @@ function formatter(ccy: string, amountStr: string){
   return ccyFormatter.format(parseFloat(amountStr));
 }
 
-interface TokenTombstone {
-  token: Omit<GrantingAgency.CreateEvent, "payload.thumbnail">
-  anchorEl: HTMLElement
-}
+//interface TokenTombstone {
+  //token: Omit<GrantingAgency.CreateEvent, "payload.thumbnail">
+  //anchorEl: HTMLElement
+//}
 
-interface TokenOfferTombstone {
-  tokenOffer: Omit<GrantOpportunity.CreateEvent, "payload.thumbnail">
-  anchorEl: HTMLElement
-}
+//interface TokenOfferTombstone {
+//  tokenOffer: Omit<GrantOpportunity.CreateEvent, "payload.thumbnail">
+//  anchorEl: HTMLElement
+//}
 
 export default function MyTokens() {
   const classes = useStyles();
