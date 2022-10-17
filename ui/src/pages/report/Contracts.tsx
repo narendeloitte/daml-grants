@@ -8,13 +8,14 @@ import Button from "@material-ui/core/Button";
 import Ledger from "@daml/ledger";
 import { useLedger, useParty, useStreamQueries} from "@daml/react";
 import { ContractId } from "@daml/types";
-import { Token, TokenOffer } from "@daml.js/daml-grants-0.0.1/lib/Token"
 import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
-import { Owner, OwnerRequest } from "@daml.js/daml-grants-0.0.1/lib/UserAdmin";
-import { Offer } from "@daml.js/daml-grants-0.0.1/lib/Token";
+import { Grants } from "@daml.js/daml-grants-0.0.1";
+import { GrantingAgency, GrantOpportunity } from "@daml.js/daml-grants-0.0.1/lib/Grants"
+import { GrantFunder, GrantFunderAccessRequest, TechnicalReviewer, TechnicalReviewerAcccessRequest, GrantingApplicantAccessRequest } from "@daml.js/daml-grants-0.0.1/lib/Administrator"
+import { Applicant, GranteeApplication } from "@daml.js/daml-grants-0.0.1/lib/ApplicantInfo"
+import { Asset } from "@daml.js/daml-grants-0.0.1/lib/Main"
 import { GridList, GridListTile, GridListTileBar, IconButton, Popover, Typography } from "@material-ui/core";
-import { fetchWellKnownParties } from "./wellKnownParties";
 import { CallMade, CallReceived, Check } from "@material-ui/icons";
 
 function formatter(ccy: string, amountStr: string){
@@ -26,12 +27,12 @@ function formatter(ccy: string, amountStr: string){
 }
 
 interface TokenTombstone {
-  token: Omit<Token.CreateEvent, "payload.thumbnail">
+  token: Omit<GrantingAgency.CreateEvent, "payload.thumbnail">
   anchorEl: HTMLElement
 }
 
 interface TokenOfferTombstone {
-  tokenOffer: Omit<TokenOffer.CreateEvent, "payload.thumbnail">
+  tokenOffer: Omit<GrantOpportunity.CreateEvent, "payload.thumbnail">
   anchorEl: HTMLElement
 }
 
@@ -40,9 +41,9 @@ export default function MyTokens() {
   const party = useParty();
   const ownedByMe = () => [{owner: party}];
   const ledger : Ledger = useLedger();
-  const tokens = useStreamQueries(Token, ownedByMe).contracts;
-  const offeredByMe = useStreamQueries(TokenOffer, ownedByMe).contracts;
-  const offeredToMe = useStreamQueries(TokenOffer, () => [{newOwner: party}]).contracts;
+  const tokens = useStreamQueries(GrantingAgency, ownedByMe).contracts;
+  const offeredByMe = useStreamQueries(GrantOpportunity, ownedByMe).contracts;
+  const offeredToMe = useStreamQueries(GrantOpportunity, () => [{newOwner: party}]).contracts;
   const owners = useStreamQueries(Owner, ownedByMe).contracts;
   const myOwnerRight = owners.length >= 1 ? owners[0] : null;
   const ownerRequests = useStreamQueries(OwnerRequest, ownedByMe).contracts;
@@ -117,12 +118,12 @@ export default function MyTokens() {
 
   async function justReject(ts: TokenOfferTombstone) {
     setTokenOfferTombstone(null);
-    ledger.exercise(TokenOffer.Reject, ts.tokenOffer.contractId, {});
+    ledger.exercise(GrantOpportunity.Reject, ts.tokenOffer.contractId, {});
   }
 
   async function justClawBack(ts: TokenOfferTombstone) {
     setTokenOfferTombstone(null);
-    ledger.exercise(TokenOffer.ClawBack, ts.tokenOffer.contractId, {});
+    ledger.exercise(GrantOpportunity.ClawBack, ts.tokenOffer.contractId, {});
   }
 
   const [tokenTombstone, setTokenTombstone] = useState<TokenTombstone | null>(null);
@@ -298,7 +299,7 @@ export default function MyTokens() {
                 disableRipple={true}
                 onClick={(e) => {
                   switch (t.templateId) {
-                    case Token.templateId:
+                    case GrantingAgency.templateId:
                       setTokenTombstone({token: t, anchorEl: e.currentTarget});
                       setTokenOfferTombstone(null);
                       break;
@@ -308,7 +309,7 @@ export default function MyTokens() {
                       break;
                   }
                 }}>{
-                  t.templateId === Token.templateId 
+                  t.templateId === GrantingAgency.templateId 
                   ? <Check />
                   : (t.payload.newOwner === party 
                     ? <CallReceived />

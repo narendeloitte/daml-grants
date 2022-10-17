@@ -8,15 +8,21 @@ import Button from "@material-ui/core/Button";
 import Ledger from "@daml/ledger";
 import { useLedger, useParty, useStreamQueries} from "@daml/react";
 import { ContractId } from "@daml/types";
-import { Offer, Token, TokenOffer } from "@daml.js/daml-grants-0.0.1/lib/Token"
 import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
+import { Grants } from "@daml.js/daml-grants-0.0.1";
+import { GrantingAgency, GrantOpportunity } from "@daml.js/daml-grants-0.0.1/lib/Grants"
+import { GrantFunder, GrantFunderAccessRequest, TechnicalReviewer, TechnicalReviewerAcccessRequest, GrantingApplicantAccessRequest } from "@daml.js/daml-grants-0.0.1/lib/Administrator"
+import { Applicant, GranteeApplication } from "@daml.js/daml-grants-0.0.1/lib/ApplicantInfo"
+import { Asset } from "@daml.js/daml-grants-0.0.1/lib/Main"
+
+
 
 export default function Report() {
   const classes = useStyles();
   const party = useParty();
   const ledger : Ledger = useLedger();
-  const tokens = useStreamQueries(Token).contracts;
+  const grants = useStreamQueries(Grants).contracts;
 
   const defaultOfferProps : InputDialogProps<Offer> = {
     open: false,
@@ -38,17 +44,17 @@ export default function Report() {
     onClose: async function() {}
   };
 
-  const [ offerProps, setOfferProps ] = useState(defaultOfferProps);
-  // One can pass the original contracts CreateEvent
-  function showOffer(token : Token.CreateEvent) {
-    async function onClose(state : Offer | null) {
-      setOfferProps({ ...defaultOfferProps, open: false});
-      // if you want to use the contracts payload
-      if (!state || token.payload.owner === state.newOwner) return;
-      await ledger.exercise(Token.Offer, token.contractId, state);
-    };
-    setOfferProps({ ...defaultOfferProps, open: true, onClose})
-  };
+  // const [ offerProps, setOfferProps ] = useState(defaultOfferProps);
+  // // One can pass the original contracts CreateEvent
+  // function showOffer(token : Grants.GrantOpportunity) {
+  //   async function onClose(state : Offer | null) {
+  //     setOfferProps({ ...defaultOfferProps, open: false});
+  //     // if you want to use the contracts payload
+  //     if (!state || token.payload.owner === state.newOwner) return;
+  //     await ledger.exercise(Token.Offer, token.contractId, state);
+  //   };
+  //   setOfferProps({ ...defaultOfferProps, open: true, onClose})
+  // };
 
   return (
     <>

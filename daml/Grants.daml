@@ -63,7 +63,6 @@ template GrantOpportunity
                       status = "Funded"
                       totalAmount = fundAmount
                       grantFunder = grantFunder 
-       
 
 template GrantOpportunityApplications
   with
