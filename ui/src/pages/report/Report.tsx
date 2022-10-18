@@ -8,18 +8,18 @@ import Button from "@material-ui/core/Button";
 import Ledger from "@daml/ledger";
 import { useStreamQueries, useLedger, useParty } from "@daml/react";
 import { ContractId } from "@daml/types";
+import { GrantingAgency, GrantOpportunity } from "@daml.js/daml-grants-0.0.1/lib/Grants"
 import { Appraise, Asset, Give  } from "@daml.js/daml-grants-0.0.1/lib/Main";
 import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
 import { getName, getParty } from "../../config";
-import { GrantingAgency, GrantOpportunity, CreateGrant, FundGrant } from "@daml.js/daml-grants-0.0.1/lib/Grants"
 
 
 export default function Report() {
   const classes = useStyles();
   const party = useParty();
   const ledger : Ledger = useLedger();
-  const assets = useStreamQueries(Asset);
+//  const assets = useStreamQueries(Asset);
   const grantopp = useStreamQueries(GrantOpportunity);
 
   const defaultGiveProps : InputDialogProps<Give> = {

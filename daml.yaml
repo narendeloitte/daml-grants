@@ -16,9 +16,9 @@ dependencies:
   - daml-stdlib
   - daml-script
 
-sandbox-options:
-- --wall-clock-time
-- --ledgerId=sandbox
+#sandbox-options:
+#- --wall-clock-time
+#- --ledgerId=daml-grants
 start-navigator: true
 script-options:
   - --output-file=ui/src/parties.json
