@@ -23,6 +23,7 @@ export default function Report() {
   const party = useParty();
   const ledger : Ledger = useLedger();
   const assets = useStreamQueries(Asset);
+  const grantopp = useStreamQueries(GrantOpportunity);
 
 // The Give is a choice
   const defaultGiveProps : InputDialogProps<Give> = {
@@ -45,7 +46,7 @@ export default function Report() {
       setGiveProps({ ...defaultGiveProps, open: false});
       // if you want to use the contracts payload
       if (!state || asset.payload.owner === state.newOwner) return;
-      await ledger.exercise(Asset.Give, asset.contractId, { newOwner: getParty(state.newOwner) } );
+      await ledger.exercise(Asset.Give, asset.contractId, { newOwner: (state.newOwner) } );
     };
     setGiveProps({ ...defaultGiveProps, open: true, onClose})
   };
@@ -112,7 +113,7 @@ export default function Report() {
     async function onClose(state : InputFieldsForNewAsset | null) {
       setNewAssetProps({ ...defaultNewAssetProps, open: false});
       if (!state) return;
-      const withIssuer = { ...state, issuer: party, owner: getParty(state.owner) };
+      const withIssuer = { ...state, issuer: party, owner: (state.owner) };
       await ledger.create(Asset, withIssuer);
     };
     setNewAssetProps({...defaultNewAssetProps, open: true, onClose});
@@ -129,28 +130,36 @@ export default function Report() {
       <Table size="small">
         <TableHead>
           <TableRow className={classes.tableRow}>
-            <TableCell key={0} className={classes.tableCell}>Issuer</TableCell>
-            <TableCell key={1} className={classes.tableCell}>Owner</TableCell>
-            <TableCell key={2} className={classes.tableCell}>Name</TableCell>
-            <TableCell key={3} className={classes.tableCell}>Value</TableCell>
-            <TableCell key={4} className={classes.tableCell}>DateOfAppraisal</TableCell>
-            <TableCell key={5} className={classes.tableCell}>Give</TableCell>
-            <TableCell key={6} className={classes.tableCell}>Appraise</TableCell>
+            <TableCell key={0} className={classes.tableCell}>Title</TableCell>
+            <TableCell key={1} className={classes.tableCell}>Granting Agency</TableCell>
+            <TableCell key={2} className={classes.tableCell}>Type Of Grant</TableCell>
+            <TableCell key={3} className={classes.tableCell}>Description</TableCell>
+            <TableCell key={4} className={classes.tableCell}>Total Amount</TableCell>
+            <TableCell key={5} className={classes.tableCell}>Status</TableCell>
+            <TableCell key={6} className={classes.tableCell}>Contact</TableCell>
+            <TableCell key={7} className={classes.tableCell}>Email</TableCell>
+            <TableCell key={8} className={classes.tableCell}>Administrator</TableCell>
+            <TableCell key={9} className={classes.tableCell}>Grant Funder</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {assets.contracts.map(a => (
+          {grantopp.contracts.map(a => (
             <TableRow key={a.contractId} className={classes.tableRow}>
-              <TableCell key={0} className={classes.tableCell}>{getName(a.payload.issuer)}</TableCell>
-              <TableCell key={1} className={classes.tableCell}>{getName(a.payload.owner)}</TableCell>
-              <TableCell key={2} className={classes.tableCell}>{a.payload.name}</TableCell>
-              <TableCell key={3} className={classes.tableCell}>{a.payload.value}</TableCell>
-              <TableCell key={4} className={classes.tableCell}>{a.payload.dateOfAppraisal}</TableCell>
-              <TableCell key={5} className={classes.tableCellButton}>
-                <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.owner !== party} onClick={() => showGive(a)}>Give</Button>
+              <TableCell key={0} className={classes.tableCell}>{a.payload.title}</TableCell>
+              <TableCell key={1} className={classes.tableCell}>{a.payload.grantingAgency}</TableCell>
+              <TableCell key={2} className={classes.tableCell}>{a.payload.typeOfGrant}</TableCell>
+              <TableCell key={3} className={classes.tableCell}>{a.payload.description}</TableCell>
+              <TableCell key={4} className={classes.tableCell}>{a.payload.totalAmount}</TableCell>
+              <TableCell key={5} className={classes.tableCell}>{a.payload.status}</TableCell>
+              <TableCell key={6} className={classes.tableCell}>{a.payload.contact}</TableCell>
+              <TableCell key={7} className={classes.tableCell}>{a.payload.email}</TableCell>
+              <TableCell key={8} className={classes.tableCell}>{a.payload.administrator}</TableCell>
+              <TableCell key={9} className={classes.tableCell}>{a.payload.grantFunder}</TableCell>
+              <TableCell key={10} className={classes.tableCellButton}>
+                <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.title !== party} onClick={() => showGive(a)}>Give</Button>
               </TableCell>
               <TableCell key={6} className={classes.tableCellButton}>
-                <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.issuer !== party} onClick={() => showAppraise(a.contractId)}>Appraise</Button>
+                <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.grantingAgency !== party} onClick={() => showAppraise(a.contractId)}>Appraise</Button>
               </TableCell>
             </TableRow>
           ))}
