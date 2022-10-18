@@ -11,10 +11,10 @@ import { ContractId } from "@daml/types";
 import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
 import { Grants } from "@daml.js/daml-grants-0.0.1";
-import { GrantingAgency, GrantOpportunity } from "@daml.js/daml-grants-0.0.1/lib/Grants"
+import { GrantingAgency, GrantOpportunity, CreateGrant, FundGrant } from "@daml.js/daml-grants-0.0.1/lib/Grants"
 import { GrantFunder, GrantFunderAccessRequest, TechnicalReviewer, TechnicalReviewerAcccessRequest, GrantingApplicantAccessRequest } from "@daml.js/daml-grants-0.0.1/lib/Administrator"
 import { Applicant, GranteeApplication } from "@daml.js/daml-grants-0.0.1/lib/ApplicantInfo"
-import { Asset } from "@daml.js/daml-grants-0.0.1/lib/Main"
+import { Asset, Give, Appraise } from "@daml.js/daml-grants-0.0.1/lib/Main"
 
 
 
@@ -33,7 +33,7 @@ export default function Report() {
       newOwner : {
         label: "New Owner",
         type: "selection",
-        items: [ "Alice", "Bob" ] } },
+        items: [ "DeloitteAgency" , "DeloitteFunder", "DeloitteAdmin", "DeloitteApplicant1", "DeloitteApplicant2" ,"DeloitteApplicant3", "deloitteTechnicalReviewer" ] } },
     onClose: async function() {}
   };
 
@@ -90,7 +90,7 @@ export default function Report() {
       owner: {
         label: "Owner",
         type: "selection",
-        items: [ "Alice", "Bob" ],
+        items: [ "DeloitteFunder", "DeloitteAgency" ],
       },
       name: {
         label: "Name of Asset",
