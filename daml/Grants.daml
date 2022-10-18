@@ -186,3 +186,10 @@ submit aliceAgency do
   exerciseCmd final1 AppendApplications
     with
       granteeApplication=[applicantJija] 
+
+--              <TableCell key={10} className={classes.tableCellButton}>
+--                <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.title !== party} onClick={() => showGive(a)}>Give</Button>
+--              </TableCell>
+--              <TableCell key={11} className={classes.tableCellButton}>
+--                <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.grantingAgency !== party} onClick={() => showAppraise(a.contractId)}>Appraise</Button>
+--              </TableCell>

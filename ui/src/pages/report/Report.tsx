@@ -6,16 +6,13 @@ import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import Button from "@material-ui/core/Button";
 import Ledger from "@daml/ledger";
-import { useLedger, useParty, useStreamQueries} from "@daml/react";
+import { useStreamQueries, useLedger, useParty } from "@daml/react";
 import { ContractId } from "@daml/types";
+import { Appraise, Asset, Give  } from "@daml.js/daml-grants-0.0.1/lib/Main";
 import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
-import { Grants } from "@daml.js/daml-grants-0.0.1";
+import { getName, getParty } from "../../config";
 import { GrantingAgency, GrantOpportunity, CreateGrant, FundGrant } from "@daml.js/daml-grants-0.0.1/lib/Grants"
-import { GrantFunder, GrantFunderAccessRequest, TechnicalReviewer, TechnicalReviewerAcccessRequest, GrantingApplicantAccessRequest } from "@daml.js/daml-grants-0.0.1/lib/Administrator"
-import { Applicant, GranteeApplication } from "@daml.js/daml-grants-0.0.1/lib/ApplicantInfo"
-import { Asset, Give, Appraise } from "@daml.js/daml-grants-0.0.1/lib/Main"
-
 
 
 export default function Report() {
@@ -25,7 +22,6 @@ export default function Report() {
   const assets = useStreamQueries(Asset);
   const grantopp = useStreamQueries(GrantOpportunity);
 
-// The Give is a choice
   const defaultGiveProps : InputDialogProps<Give> = {
     open: false,
     title: "Give Asset",
@@ -34,23 +30,22 @@ export default function Report() {
       newOwner : {
         label: "New Owner",
         type: "selection",
-        items: [ "DeloitteAgency" , "DeloitteFunder", "DeloitteAdmin", "DeloitteApplicant1", "DeloitteApplicant2" ,"DeloitteApplicant3", "deloitteTechnicalReviewer" ] } },
+        items: [ "Alice", "Bob" ] } },
     onClose: async function() {}
   };
 
   const [ giveProps, setGiveProps ] = useState(defaultGiveProps);
   // One can pass the original contracts CreateEvent
   function showGive(asset : Asset.CreateEvent) {
-    //Give is a choice
     async function onClose(state : Give | null) {
       setGiveProps({ ...defaultGiveProps, open: false});
       // if you want to use the contracts payload
       if (!state || asset.payload.owner === state.newOwner) return;
-      await ledger.exercise(Asset.Give, asset.contractId, { newOwner: (state.newOwner) } );
+      await ledger.exercise(Asset.Give, asset.contractId, { newOwner: getParty(state.newOwner) } );
     };
     setGiveProps({ ...defaultGiveProps, open: true, onClose})
   };
-//Appraise is choice
+
   type UserSpecifiedAppraise = Pick<Appraise, "newValue">;
   const today = (new Date()).toISOString().slice(0,10);
   const defaultAppraiseProps : InputDialogProps<UserSpecifiedAppraise> = {
@@ -77,33 +72,65 @@ export default function Report() {
     setAppraiseProps({...defaultAppraiseProps, open: true, onClose});
   };
 
-  type InputFieldsForNewAsset = Omit<Asset, "issuer">;
+  type InputFieldsForNewAsset = Omit<GrantOpportunity, "issuer">;
   const defaultNewAssetProps : InputDialogProps<InputFieldsForNewAsset> = {
     open: false,
-    title: "New Asset",
+    title: "New Grant Opportunity",
     defaultValue: {
-      owner: party,
-      name: "",
-      dateOfAppraisal: today,
-      value: "0",
+      grantingAgency: party,
+      typeOfGrant: "",
+      description: "",
+      totalAmount: "0",
+      title: "",
+      status: "",
+      contact: "",
+      email: "",
+      administrator: party,
+      grantFunder: party
     },
     fields: {
-      owner: {
-        label: "Owner",
+      grantingAgency: {
+        label: "Granting Agency",
         type: "selection",
-        items: [ "DeloitteFunder", "DeloitteAgency" ],
+        items: [ "DeloitteAgency", "DeloitteFunder" ],
       },
-      name: {
-        label: "Name of Asset",
+      typeOfGrant: {
+        label: "Type of Grant",
         type: "text"
       },
-      dateOfAppraisal: {
-        label: "Date of Appraisal",
-        type: "date"
+      description: {
+        label: "Description",
+        type: "text"
       },
-      value: {
+      totalAmount: {
         label: "Value",
         type: "number"
+      },
+      title: {
+        label: "Title",
+        type: "text",
+      },
+      status: {
+        label: "Status",
+        type: "text",
+      },
+      contact: {
+        label: "Phone",
+        type: "text",
+      },
+      email: {
+        label: "Email",
+        type: "text",
+      },
+      administrator: {
+        label: "Administrator",
+        type: "selection",
+        items: [ "DeloitteAgency", "DeloitteFunder" ],
+      },
+      grantFunder: {
+        label: "Grant Funder",
+        type: "selection",
+        items: [ "DeloitteAgency", "DeloitteFunder" ],
       }
     },
     onClose: async function() {}
@@ -113,8 +140,8 @@ export default function Report() {
     async function onClose(state : InputFieldsForNewAsset | null) {
       setNewAssetProps({ ...defaultNewAssetProps, open: false});
       if (!state) return;
-      const withIssuer = { ...state, issuer: party, owner: (state.owner) };
-      await ledger.create(Asset, withIssuer);
+      const withIssuer = { ...state, issuer: party, owner: getParty(state.grantingAgency) };
+      await ledger.create(GrantOpportunity, withIssuer);
     };
     setNewAssetProps({...defaultNewAssetProps, open: true, onClose});
   };
@@ -125,11 +152,11 @@ export default function Report() {
       <InputDialog { ...appraiseProps } />
       <InputDialog { ...newAssetProps } />
       <Button color="primary" size="small" className={classes.choiceButton} variant="contained" onClick={() => showNewAsset()}>
-        Create New Asset
+        Create New Grant Opportunity
       </Button>
       <Table size="small">
         <TableHead>
-          <TableRow className={classes.tableRow}>
+        <TableRow className={classes.tableRow}>
             <TableCell key={0} className={classes.tableCell}>Title</TableCell>
             <TableCell key={1} className={classes.tableCell}>Granting Agency</TableCell>
             <TableCell key={2} className={classes.tableCell}>Type Of Grant</TableCell>
@@ -155,12 +182,6 @@ export default function Report() {
               <TableCell key={7} className={classes.tableCell}>{a.payload.email}</TableCell>
               <TableCell key={8} className={classes.tableCell}>{a.payload.administrator}</TableCell>
               <TableCell key={9} className={classes.tableCell}>{a.payload.grantFunder}</TableCell>
-              <TableCell key={10} className={classes.tableCellButton}>
-                <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.title !== party} onClick={() => showGive(a)}>Give</Button>
-              </TableCell>
-              <TableCell key={6} className={classes.tableCellButton}>
-                <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.grantingAgency !== party} onClick={() => showAppraise(a.contractId)}>Appraise</Button>
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>

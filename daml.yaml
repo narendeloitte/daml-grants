@@ -1,6 +1,7 @@
 sdk-version: 2.3.4
 name: daml-grants
 source: daml
+init-script: TestCases:test_GrantingProcess
 #parties:
 #   - DeloitteAgency
 #   - DeloitteFunder
@@ -14,7 +15,10 @@ dependencies:
   - daml-prim
   - daml-stdlib
   - daml-script
-init-script: TestCases:test_GrantingProcess
+
+sandbox-options:
+- --wall-clock-time
+- --ledgerId=sandbox
 start-navigator: true
 script-options:
   - --output-file=ui/src/parties.json
