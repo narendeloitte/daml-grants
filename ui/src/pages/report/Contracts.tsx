@@ -36,7 +36,7 @@ function formatter(ccy: string, amountStr: string){
 //  anchorEl: HTMLElement
 //}
 
-export default function MyTokens() {
+export default function MyGrants() {
   const classes = useStyles();
   const party = useParty();
   const ownedByMe = () => [{owner: party}];
