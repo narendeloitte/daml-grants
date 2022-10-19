@@ -8,11 +8,12 @@ import Button from "@material-ui/core/Button";
 import Ledger from "@daml/ledger";
 import { useStreamQueries, useLedger, useParty } from "@daml/react";
 import { ContractId } from "@daml/types";
-import { GrantingAgency, GrantOpportunity } from "@daml.js/daml-grants-0.0.1/lib/Grants"
+import { GrantOpportunity } from "@daml.js/daml-grants-0.0.1/lib/Grants"
+//import { test_GrantingProcess  } from "@daml.js/daml-grants-0.0.1/lib/TestCases"
 import { Appraise, Asset, Give  } from "@daml.js/daml-grants-0.0.1/lib/Main";
 import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
-import { getName, getParty } from "../../config";
+import { getParty } from "../../config";
 
 
 export default function Report() {
@@ -30,7 +31,7 @@ export default function Report() {
       newOwner : {
         label: "New Owner",
         type: "selection",
-        items: [ "Alice", "Bob" ] } },
+        items: [ "DeloiiteAdmin", "DeloitteFunder" ] } },
     onClose: async function() {}
   };
 
